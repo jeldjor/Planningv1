@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kim Planner v2.69</title>
+<title>Kim Planner v2.70</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
@@ -4198,6 +4198,171 @@ async function drawVisitPdfLayout(doc,visit){
     ['setupTheme','mobileSettingTheme'].forEach(id=>document.getElementById(id)?.addEventListener('change',e=>applyTheme(e.target.value)));
     ['setupLang','mobileSettingLang'].forEach(id=>document.getElementById(id)?.addEventListener('change',e=>setLang(e.target.value)));
     new MutationObserver(fixPlaceholders).observe(document.body,{childList:true,subtree:true});
+  });
+})();
+</script>
+
+
+
+<style>
+/* v2.70 iPhone polish: kleur-header, compactere velden, duidelijk menu */
+@media(max-width:760px){
+  body{background:#f6f7f9!important;}
+  .mobileHeader{
+    height:60px!important;
+    padding:8px 14px!important;
+    background:var(--primary)!important;
+    border-bottom:0!important;
+    box-shadow:0 8px 24px rgba(16,24,40,.14)!important;
+  }
+  .mobileHeader img{
+    height:44px!important;
+    max-width:82px!important;
+    object-fit:contain!important;
+    background:#fff!important;
+    border-radius:12px!important;
+    padding:5px!important;
+    box-shadow:0 4px 14px rgba(16,24,40,.12)!important;
+  }
+  .mobileMenuBtn{
+    background:#fff!important;
+    color:var(--primary-dark)!important;
+    border:2px solid rgba(255,255,255,.9)!important;
+    min-height:42px!important;
+    border-radius:15px!important;
+    padding:8px 15px!important;
+    font-size:14px!important;
+    line-height:1!important;
+    letter-spacing:.08em!important;
+    box-shadow:0 5px 14px rgba(16,24,40,.12)!important;
+  }
+  .main{padding-top:72px!important;}
+  .panel{padding:14px!important;border-radius:18px!important;margin-bottom:14px!important;}
+  .panel h2,.screen h2{font-size:25px!important;line-height:1.05!important;margin:0 0 14px!important;}
+
+  /* compact en voorspelbaar formulier */
+  label{font-size:12px!important;font-weight:900!important;margin:0 0 8px!important;gap:4px!important;color:#374151!important;}
+  input,select,textarea{
+    width:100%!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    padding:8px 11px!important;
+    border-radius:12px!important;
+    font-size:15px!important;
+    line-height:1.1!important;
+    font-weight:750!important;
+    text-align:left!important;
+    -webkit-appearance:none!important;
+    appearance:none!important;
+    background-color:#fff!important;
+  }
+  select{padding-right:32px!important;background-image:linear-gradient(45deg,transparent 50%,#182230 50%),linear-gradient(135deg,#182230 50%,transparent 50%)!important;background-position:calc(100% - 18px) 18px,calc(100% - 12px) 18px!important;background-size:6px 6px,6px 6px!important;background-repeat:no-repeat!important;}
+  textarea{height:64px!important;min-height:64px!important;max-height:96px!important;resize:vertical!important;}
+  input[type="date"],input[type="time"]{
+    text-align:left!important;
+    justify-content:flex-start!important;
+    font-size:15px!important;
+    font-weight:800!important;
+  }
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value{ text-align:left!important; }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator{ opacity:.75!important; }
+  input::placeholder,textarea::placeholder{font-weight:800!important;color:#98a2b3!important;opacity:1!important;}
+
+  /* Afwezigheid formulier: type/omschrijving breed, datums en tijden naast elkaar */
+  #availability .formGrid{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    margin:6px 0 10px!important;
+    align-items:end!important;
+  }
+  #availability .formGrid label{min-width:0!important;}
+  #availability .formGrid label:nth-child(1),
+  #availability .formGrid label:nth-child(6){grid-column:1/-1!important;}
+  #availability .formGrid .wide{grid-column:1/-1!important;}
+  #availability #blockType,#availability #blockStart,#availability #blockEnd,
+  #availability #blockStartTime,#availability #blockEndTime,#availability #blockNote{
+    max-width:none!important;
+  }
+  #availability #btnAddBlock{
+    min-height:44px!important;
+    height:44px!important;
+    padding:8px 14px!important;
+    border-radius:13px!important;
+    font-size:15px!important;
+    margin-top:2px!important;
+  }
+
+  /* overzicht/filters niet als enorme lege balken */
+  .filters{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin:8px 0 12px!important;}
+  .filters input,.filters select{height:44px!important;min-height:44px!important;max-height:44px!important;}
+  .tableWrap{border-radius:15px!important;}
+
+  /* menu duidelijk leesbaar in elke kleur */
+  .mobileMenuBackdrop{padding:76px 14px 14px!important;background:rgba(15,23,42,.48)!important;}
+  .mobileMenuPanel{width:min(330px,92vw)!important;border-radius:20px!important;padding:14px!important;}
+  .mobileMenuPanel h3{font-size:20px!important;margin:4px 4px 10px!important;color:#182230!important;}
+  .mobileMenuPanel button{
+    background:#fff!important;
+    color:#182230!important;
+    border:1.5px solid #d5dbe7!important;
+    min-height:46px!important;
+    margin:6px 0!important;
+    padding:11px 12px!important;
+    border-radius:13px!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    box-shadow:none!important;
+  }
+  .mobileMenuPanel button.active{
+    background:var(--primary)!important;
+    border-color:var(--primary)!important;
+    color:#fff!important;
+  }
+  .mobileMenuPanel button.active::after{color:#fff!important;}
+  .mobileMenuPanel button::after{color:inherit!important;opacity:.85!important;}
+  .mobileMenuClose{background:#f8fafc!important;color:#182230!important;border-color:#d5dbe7!important;}
+
+  /* instellingen/setup compact en met dezelfde kleurkeuzes */
+  .mobileSetup{background:linear-gradient(180deg,var(--primary),var(--primary-dark))!important;}
+  .mobileSetupCard{padding:18px!important;border-radius:22px!important;}
+  .setupLogo{background:#fff!important;border-radius:14px!important;padding:6px!important;box-shadow:0 4px 16px rgba(16,24,40,.12)!important;}
+  .mobileSettingsDialog input,.mobileSettingsDialog select,.mobileSetup input,.mobileSetup select{height:44px!important;min-height:44px!important;max-height:44px!important;}
+  .setupCheck input,#mobileSettingDefault,#setupDefault{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;-webkit-appearance:auto!important;appearance:auto!important;}
+}
+</style>
+<script>
+(function(){
+  const colors={blue:'#315f9f',green:'#208250',purple:'#6d3bc2',orange:'#f97316',red:'#c03434'};
+  const dark={blue:'#254b7e',green:'#166534',purple:'#4c1d95',orange:'#c2410c',red:'#991b1b'};
+  function currentTheme(){return localStorage.getItem('gj_mobile_theme')||localStorage.getItem('gj_theme')||'blue'}
+  function forceTheme(t){
+    t=t||currentTheme();
+    localStorage.setItem('gj_mobile_theme',t); localStorage.setItem('gj_theme',t);
+    document.documentElement.setAttribute('data-theme',t);
+    document.documentElement.style.setProperty('--primary',colors[t]||colors.blue);
+    document.documentElement.style.setProperty('--primary-dark',dark[t]||dark.blue);
+    document.documentElement.style.setProperty('--blue',colors[t]||colors.blue);
+    document.documentElement.style.setProperty('--blue2',dark[t]||dark.blue);
+    const meta=document.querySelector('meta[name="theme-color"]'); if(meta) meta.content=colors[t]||colors.blue;
+  }
+  window.gjForceMobileTheme=forceTheme;
+  function placeholders(){
+    const ph={blockStartTime:'Bijv. 09:00',blockEndTime:'Bijv. 12:30',blockNote:'Bijv. verlof ochtend, tandarts...',overviewSearch:'Zoeken op klant, plaats of status...'};
+    Object.entries(ph).forEach(([id,text])=>{const el=document.getElementById(id); if(el) el.placeholder=text;});
+    document.querySelectorAll('input[type="time"]').forEach(el=>{el.placeholder=el.placeholder||'Bijv. 09:00';});
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    forceTheme(); placeholders(); setTimeout(placeholders,500);
+    ['setupTheme','mobileSettingTheme'].forEach(id=>{
+      const el=document.getElementById(id); if(el){el.value=currentTheme(); el.addEventListener('change',e=>forceTheme(e.target.value),true);}
+    });
+    document.getElementById('setupOpenPlanner')?.addEventListener('click',()=>setTimeout(()=>forceTheme(document.getElementById('setupTheme')?.value||currentTheme()),20),true);
+    document.getElementById('mobileSaveSettings')?.addEventListener('click',()=>setTimeout(()=>forceTheme(document.getElementById('mobileSettingTheme')?.value||currentTheme()),20),true);
+    new MutationObserver(()=>{forceTheme();placeholders();}).observe(document.body,{childList:true,subtree:true});
   });
 })();
 </script>
