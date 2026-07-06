@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Planning Mobile v3.7</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--primary:#315f9f;--primary-dark:#254b7e;--gold:#ffb547;--bg:#f6f7f9;--panel:#fff;--text:#182230;--muted:#667085;--line:#e5e7eb;--soft:#eef4fb;--shadow:0 8px 22px rgba(16,24,40,.08)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;padding-bottom:env(safe-area-inset-bottom)}
+.splash{position:fixed;inset:0;background:var(--primary);display:grid;place-items:center;z-index:99;color:white;transition:.35s}.splash.hide{opacity:0;pointer-events:none}.splashCard{text-align:center}.splash small{display:block;margin-bottom:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9}.logoBox{background:#fff;border-radius:20px;padding:14px;width:154px;margin:auto;box-shadow:0 18px 45px rgba(0,0,0,.25)}.logoBox img{display:block;width:100%;height:auto}
+.header{position:sticky;top:0;z-index:20;background:var(--primary);padding:10px 12px calc(10px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 24px rgba(16,24,40,.16)}.headLogo{background:white;border-radius:12px;padding:5px;width:55px;height:42px;display:grid;place-items:center}.headLogo img{max-width:100%;max-height:100%}.menuBtn{background:transparent;color:var(--gold)!important;border:2px solid rgba(255,181,71,.75);border-radius:999px;padding:9px 13px;font-weight:950;letter-spacing:.03em}
+.menuPanel{position:fixed;right:10px;top:68px;z-index:40;background:rgba(17,25,40,.97);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:8px;width:min(250px,calc(100vw - 20px));box-shadow:0 24px 80px rgba(0,0,0,.35);display:none}.menuPanel.open{display:block}.menuPanel button{width:100%;background:transparent!important;color:white!important;text-align:left;padding:13px 12px;border-radius:12px}.menuPanel button.active{background:rgba(255,255,255,.11)!important}.menuPanel .version{color:rgba(255,255,255,.65);font-size:12px;text-align:center;padding:8px 0 3px}
+main{padding:12px}.screen{display:none}.screen.active{display:block}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px;margin-bottom:12px}h1{font-size:22px;margin:4px 0 4px}h2{font-size:18px;margin:0 0 10px}.muted{color:var(--muted);font-size:13px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}.stat strong{display:block;font-size:19px}button{border:0;border-radius:13px;background:var(--primary);color:white!important;font-weight:900;padding:11px 12px;cursor:pointer}button.secondary{background:var(--soft)!important;color:var(--primary-dark)!important;border:1px solid #d9e6f4}button.ghost{background:#fff!important;color:var(--primary-dark)!important;border:1px solid var(--line)}input,select,textarea{width:100%;height:46px;border:1px solid #d5dbe7;border-radius:13px;padding:10px 11px;background:#fff;color:var(--text);font:inherit}textarea{height:74px;resize:vertical}input::placeholder,textarea::placeholder{color:#9aa4b2}label{display:grid;gap:5px;font-size:12px;font-weight:850;color:#374151}.form{display:grid;gap:9px}.formRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.visitCard{border-left:5px solid var(--primary);padding:12px}.visitTop{display:flex;justify-content:space-between;gap:10px}.visitTop strong{font-size:16px}.btnRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.dayItem{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.dayItem:last-child{border-bottom:0}.settingsVersion{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}.themeGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.themeChoice{height:42px;border-radius:12px;border:2px solid transparent}.themeChoice.active{outline:3px solid rgba(255,181,71,.55)}.blue{background:#315f9f}.green{background:#208250}.purple{background:#6d3bc2}.orange{background:#f97316}.red{background:#c03434}.empty{color:#98a2b3;text-align:center;padding:20px 10px}.pill{display:inline-flex;background:#f1f5f9;border-radius:999px;padding:5px 8px;font-size:12px;font-weight:850}
+
+.routeMode{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 7px;font-size:11px;font-weight:900;background:#f8fafc;border:1px solid var(--line);white-space:nowrap}
+.routeMode.walk{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.routeMode.drive{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.demoNotice{font-size:11px;color:#667085;margin:2px 0 8px;font-weight:750}
+
+/* v3.5 route legs + afronden popup */
+.leg{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:7px 8px;margin:6px 0;font-size:12px;font-weight:850;color:#334155}
+.leg.walk{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.leg.home{background:#fff7ed;color:#92400e;border-color:#fed7aa}.leg.pause{background:#fffbeb;color:#92400e;border-style:dashed}
+.doneCheck{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;font-weight:950;margin-left:auto}
+.finishOverlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:80;display:none;align-items:flex-end;justify-content:center;padding:10px}.finishOverlay.open{display:flex}
+.finishSheet{width:min(430px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px 20px 16px 16px;padding:12px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.finishHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}.finishHead strong{font-size:17px;line-height:1.15}.finishClose{background:#f1f5f9!important;color:#334155!important;min-height:30px!important;padding:5px 9px!important}
+.finishActivity{height:38px!important}.finishSummary{height:150px!important;min-height:150px!important}.photoBox{border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;padding:9px;display:grid;gap:7px}.finishActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.finishActions .notDone{background:#fff7ed!important;color:#c2410c!important;border:1px solid #fdba74}.visitCard.done{opacity:.88;border-left-color:#16a34a!important;background:#fbfffd}.routeTotals{display:grid;gap:5px;margin-top:7px}
+
+@media(min-width:761px){body:before{content:'Open deze mobiele versie op iPhone. Op laptop wordt normaal laptop.html gebruikt.';display:block;padding:10px;text-align:center;background:#fff7ed;color:#92400e;font-weight:800}}
+
+
+/* v3.1 compact iPhone layout */
+html,body{max-width:100%;overflow-x:hidden!important}
+body{font-size:14px!important;background:#f5f6f8!important}
+.header{padding:7px 10px calc(7px + env(safe-area-inset-top))!important;min-height:54px!important}
+.headLogo{width:46px!important;height:34px!important;border-radius:10px!important;padding:4px!important;background:#fff!important;box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.menuBtn{font-size:13px!important;padding:7px 11px!important;border-width:1.5px!important;background:rgba(255,255,255,.08)!important;color:var(--gold)!important;min-height:34px!important}
+.menuPanel{top:56px!important;right:8px!important;width:min(210px,calc(100vw - 16px))!important;border-radius:14px!important;padding:6px!important}
+.menuPanel button{font-size:13px!important;padding:10px 10px!important;border-radius:10px!important;min-height:38px!important;line-height:1.15!important;color:#fff!important}
+.menuPanel .version{font-size:11px!important;padding:6px 0 2px!important}
+main{padding:9px!important;max-width:430px;margin:0 auto;width:100%}
+h1{font-size:20px!important;margin:2px 0 2px!important;line-height:1.1!important}
+h2{font-size:16px!important;margin:0 0 7px!important}.muted{font-size:12px!important;line-height:1.25!important}
+.panel,.card{border-radius:14px!important;padding:10px!important;margin-bottom:9px!important;box-shadow:0 4px 14px rgba(16,24,40,.055)!important;max-width:100%;overflow:hidden!important}
+.grid2,.formRow{grid-template-columns:1fr 1fr!important;gap:7px!important}.form{gap:7px!important}
+label{font-size:11px!important;gap:3px!important;line-height:1.15!important}
+input,select,textarea{height:38px!important;min-height:38px!important;border-radius:10px!important;padding:7px 9px!important;font-size:13px!important;line-height:1.15!important;max-width:100%!important}
+textarea{height:58px!important;min-height:58px!important;resize:none!important}.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}.stat{padding:7px 6px!important;border-radius:11px!important;text-align:center!important;min-width:0!important}.stat strong{font-size:17px!important;line-height:1!important}.stat span{font-size:11px!important;white-space:nowrap!important}.visitCard{border-left-width:4px!important;padding:10px!important}.visitTop{gap:7px!important;align-items:flex-start!important}.visitTop strong{font-size:15px!important;line-height:1.15!important;display:block;max-width:230px;overflow:hidden;text-overflow:ellipsis}.pill{font-size:11px!important;padding:4px 7px!important;white-space:nowrap!important}.btnRow{grid-template-columns:1fr 1fr!important;gap:6px!important;margin-top:8px!important}button{min-height:38px!important;border-radius:10px!important;padding:8px 9px!important;font-size:13px!important;line-height:1.1!important;color:white!important}.secondary{font-size:13px!important}.dayItem{padding:8px 0!important;align-items:center!important}.dayItem strong{font-size:13px!important}.themeGrid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}.themeChoice{height:34px!important;border-radius:9px!important;min-height:34px!important;padding:0!important}.settingsVersion{font-size:11px!important;margin-top:10px!important}.empty{padding:14px 8px!important}.splashCard .logoBox{width:135px!important;border-radius:16px!important;padding:12px!important}.splash small{font-size:11px!important;margin-bottom:10px!important}
+details summary{font-size:13px!important;line-height:1.2!important;list-style:none;cursor:pointer}details summary::-webkit-details-marker{display:none}details summary:after{content:' ▾';color:var(--primary);font-weight:900}
+#today .panel{padding-bottom:9px!important}#calendar .panel{padding-top:8px!important}#overview label{margin-bottom:0!important}#absence .panel{padding:10px!important}
+@media(max-width:380px){main{padding:7px!important}.grid2,.formRow{grid-template-columns:1fr!important}.stats{grid-template-columns:repeat(3,1fr)!important}.stat strong{font-size:15px!important}.stat span{font-size:10px!important}.visitTop{display:block!important}.visitTop .pill{margin-top:5px}.btnRow{grid-template-columns:1fr!important}.themeGrid{grid-template-columns:repeat(5,1fr)!important}.themeChoice{height:30px!important;min-height:30px!important}}
+@media(max-width:330px){button,.menuPanel button,input,select{font-size:12px!important}.headLogo{width:42px!important}.menuBtn{padding:7px 9px!important}}
+
+
+
+/* v3.2 ultra-compact iPhone fix: passend op elk scherm */
+:root{--field-h:34px;--radius:10px}
+html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+body{font-size:13px!important;line-height:1.25!important}
+.header{height:auto!important;min-height:48px!important;padding:6px 9px calc(6px + env(safe-area-inset-top))!important}
+.headLogo{width:44px!important;height:32px!important;border-radius:9px!important;padding:4px!important;background:#fff!important;flex:0 0 auto!important}
+.menuBtn{min-height:31px!important;height:31px!important;padding:5px 10px!important;font-size:12px!important;border-radius:999px!important;color:var(--gold)!important;background:rgba(0,0,0,.12)!important;border:1px solid rgba(255,181,71,.8)!important;white-space:nowrap!important}
+.menuPanel{top:52px!important;right:8px!important;width:200px!important;max-width:calc(100vw - 16px)!important;border-radius:13px!important;padding:5px!important;background:rgba(15,23,42,.98)!important;overflow:hidden!important}
+.menuPanel button{min-height:34px!important;height:auto!important;padding:8px 9px!important;font-size:12px!important;line-height:1.1!important;border-radius:9px!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.menuPanel button.active{background:rgba(255,255,255,.14)!important;color:#fff!important}
+.menuPanel .version{font-size:10px!important;padding:5px 0 1px!important;color:rgba(255,255,255,.65)!important}
+main{padding:7px!important;max-width:414px!important;margin:0 auto!important;width:100%!important}
+h1{font-size:18px!important;line-height:1.05!important;margin:1px 0 2px!important}
+h2{font-size:15px!important;margin:0 0 6px!important}.muted{font-size:11px!important;line-height:1.2!important}.panel,.card{border-radius:12px!important;padding:8px!important;margin-bottom:7px!important;box-shadow:0 3px 10px rgba(16,24,40,.045)!important;overflow:hidden!important}
+.form{gap:6px!important}.grid2,.formRow{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;min-width:0!important}.grid2>* ,.formRow>*{min-width:0!important}
+label{font-size:10.5px!important;line-height:1.1!important;gap:2px!important;min-width:0!important;max-width:100%!important;color:#374151!important}
+input,select,textarea{height:var(--field-h)!important;min-height:var(--field-h)!important;max-height:var(--field-h)!important;border-radius:9px!important;padding:6px 8px!important;font-size:12px!important;line-height:1.05!important;min-width:0!important;max-width:100%!important;width:100%!important;appearance:auto!important}
+textarea{height:50px!important;min-height:50px!important;max-height:50px!important;resize:none!important;line-height:1.2!important}
+input::placeholder,textarea::placeholder{font-size:12px!important;color:#98a2b3!important;opacity:1!important}
+button{min-height:34px!important;height:auto!important;padding:7px 8px!important;border-radius:9px!important;font-size:12px!important;line-height:1.05!important;color:#fff!important;white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important}.secondary{color:#fff!important;background:var(--primary)!important;border:0!important}.ghost{color:#fff!important;background:var(--primary)!important;border:0!important}
+.stats{gap:5px!important;margin-top:7px!important}.stat{padding:6px 4px!important;border-radius:10px!important;min-width:0!important}.stat strong{font-size:15px!important}.stat span{font-size:9.5px!important;display:block!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}.visitCard{padding:8px!important;border-left-width:3px!important}.visitTop{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:start!important;gap:6px!important}.visitTop strong{font-size:14px!important;max-width:none!important;min-width:0!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}.pill{font-size:10.5px!important;padding:3px 6px!important;border-radius:999px!important;white-space:nowrap!important}.btnRow{grid-template-columns:1fr 1fr!important;gap:5px!important;margin-top:7px!important}.dayItem{padding:7px 0!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important}.dayItem strong{font-size:12.5px!important}.themeGrid{grid-template-columns:repeat(5,1fr)!important;gap:5px!important}.themeChoice{height:30px!important;min-height:30px!important;border-radius:8px!important}.settingsVersion{font-size:10.5px!important;margin-top:8px!important}.empty{padding:11px 6px!important;font-size:12px!important}
+#absence .panel{padding:8px!important}#overviewList .card,#absenceList .card{padding:8px!important}details{max-width:100%!important}details summary{font-size:12px!important;line-height:1.1!important;padding:2px 0!important}.splash{background:var(--primary)!important}.splashCard .logoBox{width:125px!important;border-radius:15px!important;padding:11px!important}.splash small{font-size:10px!important;margin-bottom:8px!important;color:#fff!important}
+@media(max-width:390px){main{padding:6px!important}.grid2,.formRow{gap:5px!important}.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}.btnRow{grid-template-columns:1fr 1fr!important}.menuPanel{width:190px!important}input,select,textarea{font-size:11.5px!important;padding-left:6px!important;padding-right:6px!important}}
+@media(max-width:350px){.grid2,.formRow{grid-template-columns:1fr!important}.btnRow{grid-template-columns:1fr!important}.stats{grid-template-columns:repeat(3,1fr)!important}.stat span{font-size:9px!important}.themeChoice{height:28px!important;min-height:28px!important}.headLogo{width:40px!important;height:30px!important}.menuBtn{font-size:11.5px!important;padding:5px 8px!important}.menuPanel{left:8px!important;right:8px!important;width:auto!important}}
+
+
+
+/* v3.3 iPhone compact grid fix - voorkomt overlap maar houdt velden naast elkaar */
+:root{--field-h:36px!important;--mobile-pad:8px!important}
+main{max-width:430px!important;width:100%!important;padding:8px!important;margin:0 auto!important;overflow-x:hidden!important}
+.screen{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+h1{font-size:19px!important;line-height:1.08!important;margin:0 0 6px!important;padding:0!important}
+.panel,.card{width:100%!important;max-width:100%!important;overflow:hidden!important;padding:9px!important;border-radius:13px!important;margin:0 0 8px!important}
+.form{display:grid!important;gap:7px!important;width:100%!important;min-width:0!important}
+.grid2,.formRow{display:flex!important;flex-direction:row!important;gap:7px!important;width:100%!important;max-width:100%!important;min-width:0!important;align-items:flex-end!important;overflow:hidden!important}
+.grid2>*,.formRow>*{flex:1 1 0!important;width:0!important;min-width:0!important;max-width:100%!important;overflow:hidden!important}
+label{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important;font-size:11px!important;line-height:1.1!important}
+input,select,textarea{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;height:var(--field-h)!important;min-height:var(--field-h)!important;max-height:var(--field-h)!important;padding:6px 7px!important;border-radius:10px!important;font-size:12px!important;line-height:1.05!important;background:#fff!important;overflow:hidden!important;text-overflow:ellipsis!important}
+input[type="date"],input[type="time"]{-webkit-appearance:none!important;appearance:none!important;text-align:center!important;font-weight:850!important;letter-spacing:0!important;padding-left:4px!important;padding-right:4px!important}
+select{-webkit-appearance:auto!important;appearance:auto!important;font-weight:850!important;padding-right:18px!important}
+textarea{height:48px!important;min-height:48px!important;max-height:48px!important;resize:none!important;line-height:1.15!important}
+#absence .panel .formRow{gap:7px!important}
+#today .panel .grid2{gap:7px!important;margin-bottom:7px!important}
+.stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
+.stat{min-width:0!important;padding:7px 4px!important;border-radius:10px!important;text-align:center!important}.stat strong{font-size:16px!important;line-height:1!important}.stat span{font-size:10px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+button{min-height:36px!important;border-radius:10px!important;padding:8px 9px!important;font-size:13px!important;line-height:1.05!important;color:#fff!important;max-width:100%!important}
+.header{min-height:54px!important;padding:8px 10px calc(8px + env(safe-area-inset-top))!important}.headLogo{width:48px!important;height:36px!important;background:#fff!important}.menuBtn{height:34px!important;min-height:34px!important;color:var(--gold)!important;background:rgba(0,0,0,.12)!important;border-color:var(--gold)!important}
+.menuPanel button{color:white!important}.menuPanel button.active{color:#fff!important;background:rgba(255,255,255,.14)!important}
+.menuPanel button{font-size:13px!important;min-height:38px!important}
+#absenceList .card,#overviewList .card{padding:9px!important}
+.empty{padding:12px 8px!important;font-size:13px!important}
+@media(max-width:390px){main{padding:7px!important}.grid2,.formRow{gap:6px!important}input,select,textarea{font-size:11.5px!important;padding-left:5px!important;padding-right:5px!important}label{font-size:10.5px!important}.menuBtn{font-size:12px!important}}
+@media(max-width:330px){.grid2,.formRow{flex-direction:column!important;align-items:stretch!important}.grid2>*,.formRow>*{width:100%!important;flex:1 1 auto!important}.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}.btnRow{grid-template-columns:1fr!important}}
+
+
+/* v3.7 functionele route/afronden status */
+.savedLine{margin-top:6px;background:#ecfdf3;color:#166534;border:1px solid #bbf7d0;border-radius:9px;padding:6px 7px;font-size:12px;font-weight:900}
+.routeBtn,.finishBtn,#btnDone,#btnNotDone{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
+
+</style>
+</head>
+<body>
+<div id="splash" class="splash"><div class="splashCard"><small>Powered by</small><div class="logoBox"><img src="logo.png" alt="Logo"></div></div></div>
+<header class="header"><div class="headLogo"><img src="logo.png" alt="Logo"></div><button id="menuBtn" class="menuBtn">MENU</button></header>
+<nav id="menuPanel" class="menuPanel">
+ <button data-screen="today" class="active">👁️ Vandaag</button>
+ <button data-screen="calendar">Kalender</button>
+ <button data-screen="overview">Overzicht</button>
+ <button data-screen="absence">Afwezigheid</button>
+ <button data-screen="settings">Instellingen</button>
+ <div class="version">v3.7 mobile</div>
+</nav>
+<main>
+<section id="today" class="screen active"><h1>Vandaag</h1><p class="muted" id="todayDate"></p><div class="panel"><div class="grid2"><label>Vertrektijd<input id="depart" type="time" value="08:00" placeholder="08:00"></label><label>Route-app<select id="navApp"><option>Waze</option><option>Google Maps</option><option>Apple Kaarten</option></select></label></div><div class="stats" style="margin-top:10px"><div class="stat"><strong id="statVisits">0</strong><span>klanten</span></div><div class="stat"><strong id="statKm">–</strong><span>km</span></div><div class="stat"><strong id="statDone">0</strong><span>klaar</span></div></div></div><div class="demoNotice">Demo-planning Noord-Brabant: 1 wandelstuk, rest auto.</div><div id="todayRoute"></div></section>
+<section id="calendar" class="screen"><h1>Kalender</h1><p class="muted">Alleen bekijken.</p><div class="panel"><div class="grid2"><button id="prevWeek" class="secondary">Vorige</button><button id="nextWeek" class="secondary">Volgende</button></div><div id="calendarList" style="margin-top:8px"></div></div></section>
+<section id="overview" class="screen"><h1>Overzicht</h1><label>Zoeken<input id="search" placeholder="Zoek klant, plaats of postcode"></label><div id="overviewList" style="margin-top:10px"></div></section>
+<section id="absence" class="screen"><h1>Afwezigheid</h1><div class="panel"><div class="form"><label>Type<select id="blockType"><option>Verlof</option><option>Ziekte</option><option>Training</option><option>Overig</option></select></label><div class="formRow"><label>Startdatum<input id="blockStart" type="date" placeholder="Datum"></label><label>Einddatum<input id="blockEnd" type="date" placeholder="Datum"></label></div><div class="formRow"><label>Starttijd<input id="blockStartTime" type="time" placeholder="09:00"></label><label>Eindtijd<input id="blockEndTime" type="time" placeholder="12:30"></label></div><label>Omschrijving<textarea id="blockNote" placeholder="Bijv. tandarts, verlof ochtend of training"></textarea></label><button id="saveBlock">Opslaan</button></div></div><div id="absenceList"></div></section>
+<section id="settings" class="screen"><h1>Instellingen</h1><div class="panel form"><label>Taal<select id="lang"><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="en">English</option></select></label><label>Kleurmodus</label><div class="themeGrid"><button class="themeChoice blue" data-theme="blue" title="Blauw"></button><button class="themeChoice green" data-theme="green" title="Groen"></button><button class="themeChoice purple" data-theme="purple" title="Paars"></button><button class="themeChoice orange" data-theme="orange" title="Oranje"></button><button class="themeChoice red" data-theme="red" title="Rood"></button></div><label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px"><input id="defaultSettings" type="checkbox" style="width:auto;height:auto"> Als standaard gebruiken</label><button id="saveSettings">Instellingen opslaan</button><div class="settingsVersion">Versie: v3.7 mobile<br>Supabase: nog niet gekoppeld</div></div></section>
+
+<div id="finishOverlay" class="finishOverlay">
+  <div class="finishSheet">
+    <div class="finishHead"><div><strong id="finishTitle">Klant afronden</strong><div id="finishMeta" class="muted"></div></div><button id="finishClose" class="finishClose">Sluit</button></div>
+    <div class="form">
+      <label>Activiteit<input id="finishActivity" class="finishActivity" placeholder="Bijv. winkelcheck, schapcontrole"></label>
+      <label>Samenvatting<textarea id="finishSummary" class="finishSummary" placeholder="Typ hier uitgebreid wat er is gedaan, bijzonderheden, afspraken of opmerkingen..."></textarea></label>
+      <div class="photoBox"><strong>Foto's</strong><input id="finishPhotos" type="file" accept="image/*" capture="environment" multiple><span class="muted">Voeg foto’s toe van de winkel/uitvoering.</span></div>
+      <div class="finishActions"><button id="btnDone">Uitgevoerd</button><button id="btnNotDone" class="notDone">Niet uitgevoerd</button></div>
+    </div>
+  </div>
+</div>
+</main>
+<script>
+const VERSION='v3.7';
+const COLORS={blue:['#315f9f','#254b7e','#eef4fb'],green:['#208250','#166534','#edf7f1'],purple:['#6d3bc2','#552b9a','#f5f3ff'],orange:['#f97316','#c2410c','#fff7ed'],red:['#c03434','#991b1b','#fbefef']};
+const $=id=>document.getElementById(id); const todayIso=()=>new Date().toISOString().slice(0,10);
+function loadDb(){try{return JSON.parse(localStorage.getItem('bp_pro_v2')||'{}')}catch(e){return {}}}
+function saveDb(db){localStorage.setItem('bp_pro_v2',JSON.stringify(db||{}))}
+let db=loadDb(); db.customers=db.customers||[]; db.visits=db.visits||[]; db.blocks=db.blocks||[]; db.history=db.history||[]; db.settings=db.settings||{};
+function applyTheme(t){t=t||localStorage.getItem('gj_theme')||db.settings.theme||'blue'; const c=COLORS[t]||COLORS.blue; document.documentElement.style.setProperty('--primary',c[0]);document.documentElement.style.setProperty('--primary-dark',c[1]);document.documentElement.style.setProperty('--soft',c[2]);document.querySelectorAll('.themeChoice').forEach(b=>b.classList.toggle('active',b.dataset.theme===t)); localStorage.setItem('gj_theme',t); db.settings.theme=t;}
+
+function seedDemoData(){
+  const d=todayIso();
+  const isDemoData=(db.customers||[]).some(c=>String(c.id||'').startsWith('demo-')) || (db.visits||[]).some(v=>String(v.id||'').startsWith('visit-demo') || String(v.id||'')==='pause-demo');
+  const hasRealData=(db.customers&&db.customers.length>0)||(db.visits&&db.visits.length>0);
+  if(hasRealData && !isDemoData) return;
+  db.customers=[
+    {id:'demo-denbosch-1',Winkel:'Stadhuis Den Bosch',Straat:'Markt',Huisnr:'1',Postcode:'5211 JV',Plaats:"'s-Hertogenbosch",Notitie:'Demo: startpunt centrum.'},
+    {id:'demo-denbosch-2',Winkel:'Noordbrabants Museum',Straat:'Verwersstraat',Huisnr:'41',Postcode:'5211 HT',Plaats:"'s-Hertogenbosch",Notitie:'Demo: korte wandelstop vanaf Markt.'},
+    {id:'demo-eindhoven-1',Winkel:'Eindhoven Centraal',Straat:'Stationsplein',Huisnr:'22',Postcode:'5611 AC',Plaats:'Eindhoven',Notitie:'Demo: auto vanaf Den Bosch.'},
+    {id:'demo-eindhoven-2',Winkel:'Van Abbemuseum',Straat:'Bilderdijklaan',Huisnr:'10',Postcode:'5611 NH',Plaats:'Eindhoven',Notitie:'Demo: auto/centrum Eindhoven.'},
+    {id:'demo-tilburg-1',Winkel:'Stadhuis Tilburg',Straat:'Stadhuisplein',Huisnr:'130',Postcode:'5038 TC',Plaats:'Tilburg',Notitie:'Demo: auto richting Tilburg.'},
+    {id:'demo-breda-1',Winkel:'Station Breda',Straat:'Stationsplein',Huisnr:'16',Postcode:'4811 BB',Plaats:'Breda',Notitie:'Demo: laatste autorit.'}
+  ];
+  db.visits=[
+    {id:'visit-demo-1',customerId:'demo-denbosch-1',date:d,time:'08:30',order:1,status:'Gepland',routeMode:'drive',travelText:'🏠 Vanaf huis: 🚗 12 min · 5 km'},
+    {id:'visit-demo-2',customerId:'demo-denbosch-2',date:d,time:'09:05',order:2,status:'Gepland',routeMode:'walk',travelText:'🚶 Vanaf vorige klant: 6 min · 450 m'},
+    {id:'visit-demo-3',customerId:'demo-eindhoven-1',date:d,time:'10:30',order:3,status:'Gepland',routeMode:'drive',travelText:'🚗 Vanaf vorige klant: 34 min · 37 km'},
+    {id:'pause-demo',isPause:true,date:d,time:'12:15',order:3.5,status:'Pauze',travelText:'☕ Pauze 30 min'},
+    {id:'visit-demo-4',customerId:'demo-eindhoven-2',date:d,time:'13:00',order:4,status:'Gepland',routeMode:'drive',travelText:'🚗 Vanaf vorige klant: 9 min · 3 km'},
+    {id:'visit-demo-5',customerId:'demo-tilburg-1',date:d,time:'14:10',order:5,status:'Bezocht',routeMode:'drive',travelText:'🚗 Vanaf vorige klant: 36 min · 38 km'},
+    {id:'visit-demo-6',customerId:'demo-breda-1',date:d,time:'15:35',order:6,status:'Gepland',routeMode:'drive',travelText:'🚗 Vanaf vorige klant: 31 min · 31 km',returnText:'🏠 Terug naar huis: 41 min · 52 km'}
+  ];
+  db.routeStats=db.routeStats||{}; db.routeStats[d]={km:166,time:'3u 09m'};
+  saveDb(db); localStorage.setItem('gj_demo_seed_v36',d);
+}
+
+function cById(id){return db.customers.find(c=>String(c.ID||c.id||'')===String(id))||{}}
+function visitDate(v){return v.date||v.datum||v.Datum||''} function visitStatus(v){return v.status||v.Status||'Gepland'}
+function render(){db=loadDb(); db.customers=db.customers||[]; db.visits=db.visits||[]; db.blocks=db.blocks||[]; db.history=db.history||[]; db.settings=db.settings||{}; seedDemoData(); applyTheme(localStorage.getItem('gj_theme')||db.settings.theme||'blue'); $('todayDate').textContent=new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}); renderToday(); renderCalendar(); renderOverview(); renderAbsence();}
+function renderToday(){const d=todayIso(); const vs=db.visits.filter(v=>visitDate(v)===d && visitStatus(v)!=='Uit planning').sort((a,b)=>(a.order||0)-(b.order||0)); const real=vs.filter(v=>!v.isPause); $('statVisits').textContent=real.length; $('statDone').textContent=real.filter(v=>['Bezocht','Uitgevoerd'].includes(visitStatus(v))).length; $('statKm').textContent=db.routeStats&&db.routeStats[d]?Math.round(db.routeStats[d].km||0):'–'; $('todayRoute').innerHTML=vs.length?vs.map(v=>visitCard(v)).join(''):'<div class="card empty">Geen route voor vandaag.</div>';}
+function visitCard(v){
+ if(v.isPause){return `<div class="leg pause">${v.travelText||'☕ Pauze'}</div>`}
+ const c=cById(v.customerId); const name=c.Winkel||v.customerName||'Klant'; const place=c.Plaats||''; const address=[c.Straat,c.Huisnr,c.Postcode].filter(Boolean).join(' '); const time=v.time||v.starttijd||''; const q=encodeURIComponent([address,place].filter(Boolean).join(' ')); const isWalk=(v.routeMode==='walk'); const modeText=isWalk?'🚶 Wandelroute':'🚗 Autoroute'; const status=visitStatus(v); const done=['Bezocht','Uitgevoerd'].includes(status);
+ return `${v.travelText?`<div class="leg ${isWalk?'walk':''}">${v.travelText}</div>`:''}<div class="card visitCard ${done?'done':''}"><div class="visitTop"><strong>${name}</strong><span class="pill">${time||'tijd onbekend'}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"><span class="routeMode ${isWalk?'walk':'drive'}">${modeText}</span><span class="pill">${status}</span>${done?'<span class="doneCheck">✓</span>':''}</div><div class="muted">${place}</div><div>${address||''}</div>${done?`<div class="savedLine">✓ ${status} opgeslagen${v.completedAt?' · '+new Date(v.completedAt).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}):''}</div>`:''}<div class="btnRow"><button type="button" class="routeBtn" data-nav="${q}">Route</button><button type="button" class="secondary finishBtn" data-visit="${v.id}">Afronden</button></div></div>${v.returnText?`<div class="leg home">${v.returnText}</div>`:''}`
+}
+function openNav(q){
+ const app=($('navApp')&&$('navApp').value)||'Google Maps';
+ let url=`https://www.google.com/maps/search/?api=1&query=${q}`;
+ if(app==='Waze') url=`https://waze.com/ul?q=${q}&navigate=yes`;
+ if(app==='Apple Kaarten') url=`http://maps.apple.com/?q=${q}`;
+ // iPhone/PWA: window.open kan geblokkeerd worden. location.href werkt betrouwbaarder.
+ try{ window.location.href=url; }catch(e){ location.assign(url); }
+}
+let activeFinishId=null;
+function openFinish(id){activeFinishId=id; const v=db.visits.find(x=>x.id===id); if(!v)return; const c=cById(v.customerId); $('finishTitle').textContent=c.Winkel||'Klant afronden'; $('finishMeta').textContent=[v.time,c.Plaats].filter(Boolean).join(' · '); $('finishActivity').value=v.activity||''; $('finishSummary').value=v.summary||''; $('finishOverlay').classList.add('open');}
+function closeFinish(){ $('finishOverlay').classList.remove('open'); activeFinishId=null; }
+function finishVisit(status){
+ const v=db.visits.find(x=>String(x.id)===String(activeFinishId));
+ if(!v){ alert('Geen klant geselecteerd.'); return; }
+ const files=Array.from(($('finishPhotos')&&$('finishPhotos').files)||[]).map(f=>({name:f.name,size:f.size,type:f.type,lastModified:f.lastModified}));
+ v.status=status;
+ v.activity=($('finishActivity')&&$('finishActivity').value||'').trim();
+ v.summary=($('finishSummary')&&$('finishSummary').value||'').trim();
+ v.photos=files;
+ v.completedAt=new Date().toISOString();
+ db.history=db.history||[];
+ const existingIndex=db.history.findIndex(h=>String(h.visitId)===String(v.id));
+ const item={id:existingIndex>=0?db.history[existingIndex].id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())),visitId:v.id,customerId:v.customerId,status:v.status,activity:v.activity,summary:v.summary,photos:files,photoCount:files.length,createdAt:v.completedAt};
+ if(existingIndex>=0) db.history[existingIndex]=item; else db.history.push(item);
+ saveDb(db);
+ closeFinish();
+ render();
+ setTimeout(()=>alert(status+' opgeslagen.'),50);
+}
+let weekOffset=0; function addDays(n){const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10)}
+function renderCalendar(){let html=''; for(let i=0;i<7;i++){const d=addDays(weekOffset*7+i); const n=db.visits.filter(v=>visitDate(v)===d&&visitStatus(v)!=='Uit planning').length; html+=`<div class="dayItem"><div><strong>${new Date(d).toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'})}</strong><br><span class="muted">${n} klanten</span></div><span class="pill">bekijken</span></div>`} $('calendarList').innerHTML=html;}
+function renderOverview(){const q=($('search')?.value||'').toLowerCase(); const rows=db.customers.filter(c=>!q||JSON.stringify(c).toLowerCase().includes(q)).slice(0,80); $('overviewList').innerHTML=rows.length?rows.map(c=>`<div class="card"><strong>${c.Winkel||c.naam||'Klant'}</strong><div class="muted">${c.Plaats||''} ${c.Postcode||''}</div><div>${[c.Straat,c.Huisnr].filter(Boolean).join(' ')}</div></div>`).join(''):'<div class="card empty">Geen klanten gevonden.</div>';}
+function renderAbsence(){const blocks=(db.blocks||[]).slice().sort((a,b)=>(b.start||'').localeCompare(a.start||'')).slice(0,20); $('absenceList').innerHTML=blocks.length?blocks.map(b=>`<div class="card"><strong>${b.type||'Afwezigheid'}</strong><div>${b.start||''}${b.end&&b.end!==b.start?' t/m '+b.end:''}</div><div class="muted">${[b.startTime,b.endTime].filter(Boolean).join(' - ')}</div><div>${b.note||''}</div></div>`).join(''):'<div class="card empty">Nog geen afwezigheid.</div>';}
+document.addEventListener('click',function(e){
+ const r=e.target.closest('.routeBtn');
+ if(r){ e.preventDefault(); openNav(r.dataset.nav||''); return; }
+ const f=e.target.closest('.finishBtn');
+ if(f){ e.preventDefault(); openFinish(f.dataset.visit); return; }
+});
+$('menuBtn').onclick=()=>$('menuPanel').classList.toggle('open'); document.querySelectorAll('[data-screen]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(b.dataset.screen).classList.add('active'); document.querySelectorAll('#menuPanel button').forEach(x=>{x.classList.remove('active'); x.textContent=x.textContent.replace('👁️ ','')}); b.classList.add('active'); b.textContent='👁️ '+b.textContent.replace('👁️ ',''); $('menuPanel').classList.remove('open');});
+$('prevWeek').onclick=()=>{weekOffset--;renderCalendar()}; $('nextWeek').onclick=()=>{weekOffset++;renderCalendar()}; $('search').oninput=renderOverview; document.querySelectorAll('.themeChoice').forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme)); $('saveSettings').onclick=()=>{db.settings=db.settings||{}; db.settings.language=$('lang').value; if($('defaultSettings').checked){localStorage.setItem('gj_app_language',$('lang').value); localStorage.setItem('gj_theme',db.settings.theme||'blue')} saveDb(db); alert('Instellingen opgeslagen.')}; $('finishClose').onclick=closeFinish; $('btnDone').onclick=()=>finishVisit('Uitgevoerd'); $('btnNotDone').onclick=()=>finishVisit('Niet uitgevoerd'); $('finishOverlay').addEventListener('click',e=>{if(e.target.id==='finishOverlay')closeFinish()}); $('saveBlock').onclick=()=>{if(!$('blockStart').value)return alert('Vul startdatum in.'); db.blocks=db.blocks||[]; db.blocks.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),type:$('blockType').value,start:$('blockStart').value,end:$('blockEnd').value||$('blockStart').value,startTime:$('blockStartTime').value,endTime:$('blockEndTime').value,note:$('blockNote').value}); saveDb(db); render();};
+window.addEventListener('load',()=>{applyTheme(); render(); ['blockStart','blockEnd'].forEach(id=>{if($(id)&&!$(id).value) $(id).value=todayIso();}); setTimeout(()=>$('splash').classList.add('hide'),850)});
+</script>
+</body></html>
