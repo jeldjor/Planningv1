@@ -1,3 +1,14 @@
-# Planning v5.7 compact mobile
+# Planning-GJsystems v3.2 modular
 
-Mobiele iPhone-layout extra compact gemaakt. Upload alle bestanden naar GitHub Pages.
+Upload de inhoud van deze map naar GitHub Pages.
+
+Belangrijkste wijziging:
+- `laptop.html` is opgeschoond.
+- CSS staat nu in `css/app.css`.
+- JavaScript staat nu in `js/app.js`.
+- Supabase koppeling blijft aanwezig.
+- Mobiele versie is meegenomen als `mobile.html` zonder groene versiebadge.
+
+Open daarna:
+- laptop: `https://jeldjor.github.io/Planningv1/laptop.html?v=32`
+- mobiel: `https://jeldjor.github.io/Planningv1/mobile.html?v=64clean`
