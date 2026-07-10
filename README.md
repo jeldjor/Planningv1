@@ -12,3 +12,6 @@ Belangrijkste wijziging:
 Open daarna:
 - laptop: `https://jeldjor.github.io/Planningv1/laptop.html?v=32`
 - mobiel: `https://jeldjor.github.io/Planningv1/mobile.html?v=64clean`
+
+## v3.9 live synchronisatie
+De laptop haalt wijzigingen uit `planning` en `visit_history` automatisch op bij openen, bij terugkeren naar het tabblad, iedere 30 seconden en via Supabase Realtime wanneer dit voor de tabellen is ingeschakeld. Een klant die op de iPhone wordt afgerond, verschijnt daardoor op de laptop met dezelfde status, activiteit en samenvatting.
