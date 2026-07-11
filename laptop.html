@@ -1622,6 +1622,26 @@ img[src="logo-dark-menu.png?v=9100"]{
     <div class="sidebarLang" aria-label="Taalkeuze">
       <button type="button" data-lang="nl" class="active">NL</button><span>|</span><button type="button" data-lang="de">DE</button><span>|</span><button type="button" data-lang="en">EN</button>
     </div>
+    <script id="gjLanguageSwitchFixV92">
+    (function(){
+      document.addEventListener('click',function(e){
+        const button=e.target.closest('.sidebarLang button[data-lang]');
+        if(!button)return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        const language=button.dataset.lang;
+        localStorage.setItem('gj_app_language',language);
+        try{localStorage.setItem('gj_language',language)}catch(_){ }
+        location.reload();
+      },true);
+      document.addEventListener('DOMContentLoaded',function(){
+        const language=localStorage.getItem('gj_app_language')||'nl';
+        document.documentElement.lang=language;
+        document.querySelectorAll('.sidebarLang button[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===language));
+      });
+    })();
+    </script>
     <div class="productVersion">v9.0</div>
   </div>
 </aside>
