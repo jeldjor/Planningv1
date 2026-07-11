@@ -118,17 +118,100 @@ display:flex!important;align-items:center!important;justify-content:center!impor
   }catch(e){}
 })();
 </script>
+
+<style id="gjMobileAdminCss">
+#adminMobile .adminTabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-bottom:7px}
+#adminMobile .adminTab{min-height:34px;padding:5px 3px;font-size:11px}
+#adminMobile .adminTab.active{background:var(--primary)!important;color:#fff!important}
+#adminMobile .adminPane[hidden]{display:none!important}
+#adminMobile .adminStatus{padding:6px 8px;border-radius:8px;background:#f8fafc;border:1px solid var(--line);font-size:11px;margin:5px 0}
+#adminMobile .adminStatus.ok{background:#ecfdf3;color:#166534;border-color:#bbf7d0}
+#adminMobile .adminStatus.err{background:#fef2f2;color:#b42318;border-color:#fecaca}
+#adminMobile .adminStatus.busy{background:#fff7ed;color:#92400e;border-color:#fed7aa}
+#adminMobile .adminUser{padding:7px;margin-bottom:5px;border:1px solid var(--line);border-radius:10px;background:#fff}
+#adminMobile .adminUserHead{display:flex;justify-content:space-between;gap:5px;align-items:flex-start}
+#adminMobile .adminUserActions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
+#adminMobile .dangerGrid{display:grid;gap:6px}
+#adminMobile .dangerGrid button{min-height:38px}
+#adminMobile .dangerButton{background:#b42318!important;color:#fff!important}
+#adminMobile .warningButton{background:#fff7ed!important;color:#c2410c!important;border:1px solid #fdba74!important}
+#adminMobile .adminHelp{font-size:10.5px;color:var(--muted);line-height:1.25;margin-bottom:7px}
+#adminMobile .tomtomState{font-weight:900}
+#adminMobile .backupInput{display:none}
+</style>
+
 </head>
 <body>
 <div id="splash" class="splash"><div><small data-key="powered">Powered by</small><div class="logoBox"><img src="logo.png" alt="Logo"></div></div></div>
 <header class="header"><div class="headLogo"><img src="logo.png" alt="Logo"></div><div class="headerActions"><button id="syncBtn" class="syncBtn" type="button" aria-label="Synchroniseren"><span class="syncIcon">↻</span> Sync</button><button id="menuBtn" class="menuBtn" type="button">MENU</button></div></header>
-<nav id="menuPanel" class="menuPanel"><button type="button" data-screen="today" class="active">👁️ <span data-key="today">Vandaag</span></button><button type="button" data-screen="calendar"><span data-key="calendar">Kalender</span></button><button type="button" data-screen="overview"><span data-key="overview">Overzicht</span></button><button type="button" data-screen="absence"><span data-key="absence">Afwezigheid</span></button><button type="button" data-screen="settings"><span data-key="settings">Instellingen</span></button><div class="version">v7.1 Supabase kalender</div></nav>
+<nav id="menuPanel" class="menuPanel"><button type="button" data-screen="today" class="active">👁️ <span data-key="today">Vandaag</span></button><button type="button" data-screen="calendar"><span data-key="calendar">Kalender</span></button><button type="button" data-screen="overview"><span data-key="overview">Overzicht</span></button><button type="button" data-screen="absence"><span data-key="absence">Afwezigheid</span></button><button type="button" data-screen="settings"><span data-key="settings">Instellingen</span></button><button type="button" data-screen="adminMobile" class="gjAdminOnly">🛡️ Beheer</button><div class="version">v7.3 Mobiel beheer</div></nav>
 <main>
 <section id="today" class="screen active"><h1 data-key="today">Vandaag</h1><p class="muted" id="todayDate"></p><div class="panel"><div class="grid2 todayControls"><label class="compactTimeField"><span data-key="depart">Vertrektijd</span><input id="depart" type="time" value="08:00"></label><label class="compactRouteField"><span data-key="routeApp">Route-app</span><select id="navApp"><option>Waze</option><option>Google Maps</option><option>Apple Kaarten</option></select></label></div><div class="stats"><div class="stat"><strong id="statVisits">0</strong><span data-key="customers">klanten</span></div><div class="stat"><strong id="statKm">–</strong><span>km</span></div><div class="stat"><strong id="statTravel">–</strong><span data-key="travelTime">reistijd</span></div><div class="stat"><strong id="statDone">0</strong><span data-key="ready">klaar</span></div></div><button id="fullRouteBtn" type="button" style="width:100%;margin-top:7px" data-key="openFullRoute">🚗 Volledige route openen</button><div class="smallBtns"><button id="togglePause" type="button" class="secondary" data-key="togglePause">☕ Pauze aan/uit</button><button id="recalcBtn" type="button" class="secondary" data-key="recalc">↻ Tijden</button><button id="resetDemo" type="button" class="secondary" data-key="resetDemo">Demo reset</button></div></div><div id="todayRoute"></div></section>
 <section id="calendar" class="screen"><h1 data-key="calendar">Kalender</h1><p class="muted" data-key="calendarHint">Klik op een dag voor kort overzicht.</p><div class="panel"><div class="monthHead"><button id="prevMonth" class="secondary" type="button">‹</button><div id="monthTitle" class="monthTitle">Maand</div><button id="nextMonth" class="secondary" type="button">›</button></div><div id="calendarList"></div></div><div id="calendarDetail"></div></section>
 <section id="overview" class="screen"><h1 data-key="overview">Overzicht</h1><label><span data-key="search">Zoeken</span><input id="search" data-ph="searchPh" placeholder="Zoek klant, plaats of postcode"></label><div id="overviewList" style="margin-top:8px"></div></section>
 <section id="absence" class="screen"><h1 data-key="absence">Afwezigheid</h1><div class="panel"><div class="form"><label><span data-key="type">Type</span><select id="blockType"><option>Verlof</option><option>Ziekte</option><option>Training</option><option>Overig</option></select></label><div class="formRow absenceDates"><label class="compactDateField"><span data-key="startDate">Startdatum</span><input id="blockStart" type="date"></label><label class="compactDateField"><span data-key="endDate">Einddatum</span><input id="blockEnd" type="date"></label></div><div class="formRow absenceTimes"><label class="compactTimeField"><span data-key="startTime">Starttijd</span><input id="blockStartTime" type="time" placeholder="09:00"></label><label class="compactTimeField"><span data-key="endTime">Eindtijd</span><input id="blockEndTime" type="time" placeholder="12:30"></label></div><label><span data-key="description">Omschrijving</span><textarea id="blockNote" data-ph="absencePh" placeholder="Bijv. tandarts, verlof ochtend of training"></textarea></label><button id="saveBlock" type="button" data-key="save">Opslaan</button></div></div><div id="absenceList"></div></section>
-<section id="settings" class="screen"><h1 data-key="settings">Instellingen</h1><div class="panel form"><label><span data-key="language">Taal</span><select id="lang"><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="en">English</option></select></label><label data-key="colorMode">Kleurmodus</label><div class="themeGrid"><button type="button" class="themeChoice blue" data-theme="blue"></button><button type="button" class="themeChoice green" data-theme="green"></button><button type="button" class="themeChoice purple" data-theme="purple"></button><button type="button" class="themeChoice orangeTheme" data-theme="orange"></button><button type="button" class="themeChoice red" data-theme="red"></button></div><label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px"><input id="defaultSettings" type="checkbox" style="width:auto;height:auto"> <span data-key="useDefault">Als standaard gebruiken</span></label><button id="saveSettings" type="button" data-key="saveSettings">Instellingen opslaan</button><div class="settingsVersion">Versie: v6.2 Kim Working<br>Supabase: nog niet gekoppeld</div></div></section>
+<section id="settings" class="screen"><h1 data-key="settings">Instellingen</h1><div class="panel form"><label><span data-key="language">Taal</span><select id="lang"><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="en">English</option></select></label><label data-key="colorMode">Kleurmodus</label><div class="themeGrid"><button type="button" class="themeChoice blue" data-theme="blue"></button><button type="button" class="themeChoice green" data-theme="green"></button><button type="button" class="themeChoice purple" data-theme="purple"></button><button type="button" class="themeChoice orangeTheme" data-theme="orange"></button><button type="button" class="themeChoice red" data-theme="red"></button></div><label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px"><input id="defaultSettings" type="checkbox" style="width:auto;height:auto"> <span data-key="useDefault">Als standaard gebruiken</span></label><button id="saveSettings" type="button" data-key="saveSettings">Instellingen opslaan</button><div class="settingsVersion">Versie: v7.3 Mobiel beheer<br>Supabase: nog niet gekoppeld</div></div></section>
+
+<section id="adminMobile" class="screen gjAdminOnly">
+  <h1>Beheer</h1>
+  <p class="muted">Alleen beschikbaar voor beheerders.</p>
+
+  <div class="adminTabs">
+    <button type="button" class="secondary adminTab active" data-admin-tab="users">Gebruikers</button>
+    <button type="button" class="secondary adminTab" data-admin-tab="tomtom">TomTom</button>
+    <button type="button" class="secondary adminTab" data-admin-tab="system">Systeem</button>
+  </div>
+
+  <div id="adminPaneUsers" class="adminPane">
+    <div class="panel form">
+      <h2>Gebruiker aanmaken</h2>
+      <div class="formRow">
+        <label><span>Voornaam</span><input id="mAdminFirstName" autocomplete="off"></label>
+        <label><span>Achternaam</span><input id="mAdminLastName" autocomplete="off"></label>
+      </div>
+      <label><span>E-mailadres</span><input id="mAdminEmail" type="email" autocomplete="off"></label>
+      <label><span>Tijdelijk wachtwoord</span><input id="mAdminPassword" type="password" autocomplete="new-password"></label>
+      <label><span>Rol</span><select id="mAdminRole"><option value="user">Gebruiker</option><option value="admin">Beheerder</option></select></label>
+      <button id="mAdminCreateUser" type="button">Gebruiker aanmaken</button>
+      <button id="mAdminRefreshUsers" type="button" class="secondary">Gebruikers vernieuwen</button>
+      <div id="mAdminUserStatus" class="adminStatus">Gebruikers nog niet geladen.</div>
+    </div>
+    <div id="mAdminUsers"></div>
+  </div>
+
+  <div id="adminPaneTomtom" class="adminPane" hidden>
+    <div class="panel form">
+      <h2>Beveiligde TomTom-koppeling</h2>
+      <p class="adminHelp">De API-sleutel blijft in Supabase en is niet zichtbaar voor gewone gebruikers. Routes en geocoding werken voor iedereen via de beveiligde proxy.</p>
+      <label><span>Nieuwe TomTom API-sleutel</span><input id="mTomTomKey" type="password" autocomplete="off" placeholder="Plak hier de sleutel"></label>
+      <button id="mTomTomSave" type="button">Opslaan en inschakelen</button>
+      <button id="mTomTomDisable" type="button" class="warningButton">TomTom uitschakelen</button>
+      <button id="mTomTomTest" type="button" class="secondary">TomTom testen</button>
+      <div id="mTomTomStatus" class="adminStatus busy">Status wordt geladen…</div>
+    </div>
+  </div>
+
+  <div id="adminPaneSystem" class="adminPane" hidden>
+    <div class="panel">
+      <h2>Systeembeheer</h2>
+      <p class="adminHelp">Voor definitief verwijderen moet je altijd exact <strong>BEVESTIG</strong> typen.</p>
+      <div class="dangerGrid">
+        <button type="button" class="secondary" data-admin-clear="planning">Planning leegmaken</button>
+        <button type="button" class="secondary" data-admin-clear="fixed">Vaste bezoeken leegmaken</button>
+        <button type="button" class="secondary" data-admin-clear="unplanned">Niet ingepland leegmaken</button>
+        <button type="button" class="secondary" data-admin-clear="history">Historie en fotoverwijzingen leegmaken</button>
+        <button type="button" class="secondary" data-admin-clear="routes">Lokale routecache leegmaken</button>
+        <button type="button" id="mAdminBackup" class="secondary">Back-up downloaden</button>
+        <button type="button" id="mAdminRestore" class="secondary">Back-up herstellen</button>
+        <input id="mAdminRestoreFile" class="backupInput" type="file" accept="application/json">
+        <button type="button" class="dangerButton" data-admin-clear="database">Database helemaal leegmaken</button>
+        <button type="button" class="dangerButton" data-admin-clear="all">Alles resetten</button>
+      </div>
+      <div id="mAdminSystemStatus" class="adminStatus">Nog geen actie uitgevoerd.</div>
+    </div>
+  </div>
+</section>
+
 <div id="finishOverlay" class="finishOverlay"><div class="finishSheet"><div class="finishHead"><div><strong id="finishTitle">Klant afronden</strong><div id="finishMeta" class="muted"></div></div><button id="finishClose" class="finishClose" type="button" data-key="close">Sluit</button></div><div class="form"><label><span data-key="activity">Activiteit</span><input id="finishActivity" data-ph="activityPh" placeholder="Bijv. winkelcheck, schapcontrole"></label><label><span data-key="summary">Samenvatting</span><textarea id="finishSummary" data-ph="summaryPh" placeholder="Typ hier uitgebreid wat er is gedaan, bijzonderheden, afspraken of opmerkingen..."></textarea></label><div class="photoBox"><strong data-key="photos">Foto's</strong><div class="photoActions"><button id="btnTakePhoto" type="button" class="secondary">📷 Maak foto</button><button id="btnChoosePhoto" type="button" class="ghost">🖼 Kies foto</button></div><input id="finishCamera" type="file" accept="image/*" capture="environment" multiple><input id="finishPhotos" type="file" accept="image/*" multiple><div id="selectedPhotos" class="photoSelection">Nog geen nieuwe foto’s gekozen.</div><div id="existingPhotos" class="photoList"></div><span id="photoHelp" class="muted" data-key="photoHelp">Maak een foto of kies er één uit Foto’s, iCloud Drive of Bestanden.</span></div><div class="finishActions"><button id="btnDone" type="button" data-key="executed">Uitgevoerd</button><button id="btnNotDone" class="orange" type="button" data-key="notExecuted">Niet uitgevoerd</button></div></div></div></div>
 </main>
 <script>
@@ -282,10 +365,210 @@ async function finish(status){
  const item={visitId:v.id,planningId:v.planningId||v.id,customerId:v.customerId,status,activity:v.activity,summary:v.summary,photos:v.photos,createdAt:v.completedAt};
  const idx=db.history.findIndex(h=>h.visitId===v.id);if(idx>=0)db.history[idx]=item;else db.history.push(item);
  save();closeFinish();renderAll();alert(ts(status)+' '+t('saved'))}
-async function init(){console.info('Planning GJ mobiel v6.2 Kim Working - centrale Supabase planning');db=load();const supaOk=await loadPlanningFromSupabase();if(!supaOk){seedDemo();syncDemoDate();recalcAll(false);}applyTheme(db.settings.theme);$('lang').value=db.settings.language||'nl';$('depart').value=(db.dayDepartures||{})[todayIso()]||'08:00';$('blockStart').value=todayIso();$('blockEnd').value=addDaysIso(todayIso(),1);$('blockEnd').min=addDaysIso(todayIso(),1);$('menuBtn').onclick=()=>$('menuPanel').classList.toggle('open');$('syncBtn').onclick=()=>manualSync(true);$('btnTakePhoto').onclick=()=>$('finishCamera').click();$('btnChoosePhoto').onclick=()=>$('finishPhotos').click();$('finishCamera').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};$('finishPhotos').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')manualSync(false)});window.addEventListener('focus',()=>manualSync(false));document.querySelectorAll('#menuPanel button[data-screen]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(b.dataset.screen).classList.add('active');document.querySelectorAll('#menuPanel button[data-screen]').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('menuPanel').classList.remove('open');renderAll()});document.addEventListener('click',e=>{const r=e.target.closest('.routeBtn');if(r){location.href=navUrl(r.dataset.q);return}const f=e.target.closest('.finishBtn');if(f){openFinish(f.dataset.id);return}const up=e.target.closest('.moveUp');if(up){move(up.dataset.id,-1);return}const down=e.target.closest('.moveDown');if(down){move(down.dataset.id,1);return}const eye=e.target.closest('.eyeBtn');if(eye){editingTime=eye.dataset.id;renderToday();return}const sv=e.target.closest('.saveTimeBtn');if(sv){const v=db.visits.find(x=>x.id===sv.dataset.id);if(v){v.time=$('editStart-'+v.id).value;v.end=$('editEnd-'+v.id).value;editingTime=null;save();renderAll();syncPlanningToSupabase().catch(console.error)}return}const rem=e.target.closest('.removePlan');if(rem){if(confirm(t('removeConfirm'))){const v=db.visits.find(x=>x.id===rem.dataset.id);if(v){v.status='Uit planning';save();renderAll()}}return}const day=e.target.closest('.monthDay');if(day){openDay(day.dataset.date);return}if(e.target.id==='finishOverlay')closeFinish()});$('depart').onchange=async()=>{try{await saveDepartureToSupabase(todayIso(),$('depart').value)}catch(e){alert('Vertrektijd opslaan mislukt: '+e.message)}};$('fullRouteBtn').onclick=()=>{location.href=fullRouteUrl()};$('togglePause').onclick=()=>{db.visits.filter(v=>v.pause&&v.date===todayIso()).forEach(v=>v.active=v.active===false?true:false);save();renderAll()};$('recalcBtn').onclick=()=>manualSync(true);$('resetDemo').onclick=()=>{seedDemo(true);syncDemoDate();renderAll()};$('prevMonth').onclick=()=>{monthOffset--;renderAll()};$('nextMonth').onclick=()=>{monthOffset++;renderAll()};$('search').oninput=renderOverview;$('finishClose').onclick=closeFinish;$('btnDone').onclick=()=>finish('Uitgevoerd');$('btnNotDone').onclick=()=>finish('Niet uitgevoerd');$('blockStart').onchange=()=>{const end=addDaysIso($('blockStart').value,1);$('blockEnd').value=end;$('blockEnd').min=end};$('blockEnd').onchange=()=>{const min=addDaysIso($('blockStart').value,1);if($('blockEnd').value<min)$('blockEnd').value=min};$('saveBlock').onclick=async()=>{if(!$('blockStart').value)return alert('Vul startdatum in.');if(!$('blockEnd').value)$('blockEnd').value=$('blockStart').value;const b={id:'b-'+Date.now(),type:$('blockType').value,start:$('blockStart').value,end:$('blockEnd').value||$('blockStart').value,startTime:$('blockStartTime').value,endTime:$('blockEndTime').value,note:$('blockNote').value};try{await saveAbsenceToSupabase(b);db.blocks.push(b);save();renderAll();alert(t('absenceSaved'))}catch(e){alert('Afwezigheid opslaan mislukt: '+e.message)}};document.querySelectorAll('.themeChoice').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.theme);save()});$('lang').onchange=()=>{db.settings.language=$('lang').value;save();renderAll()};$('saveSettings').onclick=()=>{db.settings.language=$('lang').value;if($('defaultSettings').checked){localStorage.setItem('gj_theme',db.settings.theme);localStorage.setItem('gj_app_language',db.settings.language)}save();renderAll();alert(t('settingsSaved'))};renderAll();setTimeout(()=>{const sp=$('splash'); if(sp){sp.classList.add('hide'); sp.style.display='none'}},700)}
+async function init(){console.info('Planning GJ mobiel v7.3 Mobiel beheer - centrale Supabase planning');db=load();const supaOk=await loadPlanningFromSupabase();if(!supaOk){seedDemo();syncDemoDate();recalcAll(false);}applyTheme(db.settings.theme);$('lang').value=db.settings.language||'nl';$('depart').value=(db.dayDepartures||{})[todayIso()]||'08:00';$('blockStart').value=todayIso();$('blockEnd').value=addDaysIso(todayIso(),1);$('blockEnd').min=addDaysIso(todayIso(),1);$('menuBtn').onclick=()=>$('menuPanel').classList.toggle('open');$('syncBtn').onclick=()=>manualSync(true);$('btnTakePhoto').onclick=()=>$('finishCamera').click();$('btnChoosePhoto').onclick=()=>$('finishPhotos').click();$('finishCamera').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};$('finishPhotos').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')manualSync(false)});window.addEventListener('focus',()=>manualSync(false));document.querySelectorAll('#menuPanel button[data-screen]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(b.dataset.screen).classList.add('active');document.querySelectorAll('#menuPanel button[data-screen]').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('menuPanel').classList.remove('open');renderAll()});document.addEventListener('click',e=>{const r=e.target.closest('.routeBtn');if(r){location.href=navUrl(r.dataset.q);return}const f=e.target.closest('.finishBtn');if(f){openFinish(f.dataset.id);return}const up=e.target.closest('.moveUp');if(up){move(up.dataset.id,-1);return}const down=e.target.closest('.moveDown');if(down){move(down.dataset.id,1);return}const eye=e.target.closest('.eyeBtn');if(eye){editingTime=eye.dataset.id;renderToday();return}const sv=e.target.closest('.saveTimeBtn');if(sv){const v=db.visits.find(x=>x.id===sv.dataset.id);if(v){v.time=$('editStart-'+v.id).value;v.end=$('editEnd-'+v.id).value;editingTime=null;save();renderAll();syncPlanningToSupabase().catch(console.error)}return}const rem=e.target.closest('.removePlan');if(rem){if(confirm(t('removeConfirm'))){const v=db.visits.find(x=>x.id===rem.dataset.id);if(v){v.status='Uit planning';save();renderAll()}}return}const day=e.target.closest('.monthDay');if(day){openDay(day.dataset.date);return}if(e.target.id==='finishOverlay')closeFinish()});$('depart').onchange=async()=>{try{await saveDepartureToSupabase(todayIso(),$('depart').value)}catch(e){alert('Vertrektijd opslaan mislukt: '+e.message)}};$('fullRouteBtn').onclick=()=>{location.href=fullRouteUrl()};$('togglePause').onclick=()=>{db.visits.filter(v=>v.pause&&v.date===todayIso()).forEach(v=>v.active=v.active===false?true:false);save();renderAll()};$('recalcBtn').onclick=()=>manualSync(true);$('resetDemo').onclick=()=>{seedDemo(true);syncDemoDate();renderAll()};$('prevMonth').onclick=()=>{monthOffset--;renderAll()};$('nextMonth').onclick=()=>{monthOffset++;renderAll()};$('search').oninput=renderOverview;$('finishClose').onclick=closeFinish;$('btnDone').onclick=()=>finish('Uitgevoerd');$('btnNotDone').onclick=()=>finish('Niet uitgevoerd');$('blockStart').onchange=()=>{const end=addDaysIso($('blockStart').value,1);$('blockEnd').value=end;$('blockEnd').min=end};$('blockEnd').onchange=()=>{const min=addDaysIso($('blockStart').value,1);if($('blockEnd').value<min)$('blockEnd').value=min};$('saveBlock').onclick=async()=>{if(!$('blockStart').value)return alert('Vul startdatum in.');if(!$('blockEnd').value)$('blockEnd').value=$('blockStart').value;const b={id:'b-'+Date.now(),type:$('blockType').value,start:$('blockStart').value,end:$('blockEnd').value||$('blockStart').value,startTime:$('blockStartTime').value,endTime:$('blockEndTime').value,note:$('blockNote').value};try{await saveAbsenceToSupabase(b);db.blocks.push(b);save();renderAll();alert(t('absenceSaved'))}catch(e){alert('Afwezigheid opslaan mislukt: '+e.message)}};document.querySelectorAll('.themeChoice').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.theme);save()});$('lang').onchange=()=>{db.settings.language=$('lang').value;save();renderAll()};$('saveSettings').onclick=()=>{db.settings.language=$('lang').value;if($('defaultSettings').checked){localStorage.setItem('gj_theme',db.settings.theme);localStorage.setItem('gj_app_language',db.settings.language)}save();renderAll();alert(t('settingsSaved'))};renderAll();setTimeout(()=>{const sp=$('splash'); if(sp){sp.classList.add('hide'); sp.style.display='none'}},700)}
 window.addEventListener('load',init);setTimeout(()=>{const s=$('splash');if(s){s.classList.add('hide');s.style.display='none'}},2000);
 })();
 </script>
-<script src="kim-core.js?v=6201"></script>
-<script src="auth.js?v=7200"></script>
+
+<script id="gjMobileAdminScript">
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const setStatus=(id,text,kind='')=>{const e=$(id);if(!e)return;e.textContent=text;e.className='adminStatus '+kind};
+
+  async function adminCall(body){
+    const a=window.GJ_AUTH;
+    if(!a?.isAdmin) throw new Error('Alleen beheerders hebben toegang.');
+    const {data,error}=await a.sb.functions.invoke('admin-users',{body});
+    if(error) throw error;
+    if(data?.error) throw new Error(data.error);
+    return data||{};
+  }
+
+  async function loadMobileUsers(){
+    try{
+      setStatus('mAdminUserStatus','Gebruikers laden…','busy');
+      const r=await adminCall({action:'list'});
+      const users=r.users||[];
+      $('mAdminUsers').innerHTML=users.length?users.map(u=>{
+        const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.email;
+        return `<div class="adminUser">
+          <div class="adminUserHead"><div><strong>${esc(name)}</strong><div class="muted">${esc(u.email)}</div></div><span class="pill">${u.role==='admin'?'Beheerder':'Gebruiker'}</span></div>
+          <div class="muted">${u.is_active===false?'Uitgeschakeld':'Actief'}</div>
+          <div class="adminUserActions">
+            <button type="button" class="secondary mToggleUser" data-id="${esc(u.id)}" data-active="${u.is_active!==false}">${u.is_active===false?'Inschakelen':'Uitschakelen'}</button>
+            <button type="button" class="secondary mPasswordUser" data-id="${esc(u.id)}">Wachtwoord</button>
+          </div>
+        </div>`;
+      }).join(''):'<div class="card empty">Geen gebruikers gevonden.</div>';
+      setStatus('mAdminUserStatus',`${users.length} gebruikers geladen.`,'ok');
+    }catch(e){setStatus('mAdminUserStatus',e.message,'err')}
+  }
+
+  async function loadTomTomStatus(){
+    try{
+      const {data,error}=await GJ_AUTH.sb.rpc('get_tomtom_status');
+      if(error)throw error;
+      const enabled=!!(data===true||data?.enabled===true);
+      window.GJ_TOMTOM_ENABLED=enabled;
+      setStatus('mTomTomStatus',enabled?'TomTom staat online voor alle gebruikers.':'TomTom staat uit.',enabled?'ok':'busy');
+    }catch(e){setStatus('mTomTomStatus',e.message,'err')}
+  }
+
+  function requireConfirm(label){
+    const value=prompt(`${label}\n\nTyp exact BEVESTIG om door te gaan.`);
+    return value==='BEVESTIG';
+  }
+
+  async function deleteAll(table, filter){
+    let q=GJ_AUTH.sb.from(table).delete();
+    if(filter?.column) q=q.eq(filter.column,filter.value);
+    else q=q.neq('id','00000000-0000-0000-0000-000000000000');
+    const {error}=await q;
+    if(error)throw error;
+  }
+
+  async function clearAction(action){
+    if(!GJ_AUTH?.isAdmin)throw new Error('Geen beheerdersrechten.');
+    const labels={
+      planning:'Alle planning verwijderen?',
+      fixed:'Alle vaste bezoeken verwijderen?',
+      unplanned:'Alle niet-ingeplande regels verwijderen?',
+      history:'Alle historie en fotoverwijzingen verwijderen?',
+      database:'De volledige klantendatabase en bijbehorende planning verwijderen?',
+      all:'Alle planningsdata, klanten, historie, vaste afspraken en afwezigheden verwijderen?'
+    };
+    if(action!=='routes'&&!requireConfirm(labels[action]||'Definitief verwijderen?'))return;
+    setStatus('mAdminSystemStatus','Bezig met verwijderen…','busy');
+    try{
+      if(action==='planning') await deleteAll('planning');
+      if(action==='fixed'){
+        await deleteAll('fixed_appointments');
+        const {error}=await GJ_AUTH.sb.from('planning').delete().eq('vast',true);if(error)throw error;
+      }
+      if(action==='unplanned'){
+        const {error}=await GJ_AUTH.sb.from('planning').delete().in('status',['Uit planning','Niet ingepland']);if(error)throw error;
+      }
+      if(action==='history'){
+        await deleteAll('visit_photos');
+        await deleteAll('visit_history');
+      }
+      if(action==='routes'){
+        try{
+          Object.keys(localStorage).filter(k=>/route|tomtom|geocode/i.test(k)).forEach(k=>localStorage.removeItem(k));
+          if(window.db?.visits)window.db.visits.forEach(v=>{delete v.distanceKm;delete v.travelMin;delete v.routeMode;});
+        }catch(_){}
+      }
+      if(action==='database'){
+        await deleteAll('visit_photos');await deleteAll('visit_history');await deleteAll('planning');await deleteAll('fixed_appointments');await deleteAll('customers');
+      }
+      if(action==='all'){
+        await deleteAll('visit_photos');await deleteAll('visit_history');await deleteAll('planning');await deleteAll('fixed_appointments');await deleteAll('customers');await deleteAll('app_absences');
+        const {error}=await GJ_AUTH.sb.from('app_day_settings').delete().neq('datum','1900-01-01');if(error)throw error;
+        try{localStorage.clear()}catch(_){}
+      }
+      setStatus('mAdminSystemStatus','Actie succesvol uitgevoerd.','ok');
+      if(typeof window.manualSync==='function')await window.manualSync(false);
+    }catch(e){setStatus('mAdminSystemStatus',e.message,'err')}
+  }
+
+  async function makeBackup(){
+    try{
+      setStatus('mAdminSystemStatus','Back-up wordt gemaakt…','busy');
+      const tables=['customers','planning','fixed_appointments','visit_history','visit_photos','app_absences','app_day_settings'];
+      const backup={version:'7.3',created_at:new Date().toISOString(),tables:{}};
+      for(const table of tables){
+        const {data,error}=await GJ_AUTH.sb.from(table).select('*');
+        if(error)throw error;
+        backup.tables[table]=data||[];
+      }
+      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Planningv1-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);
+      setStatus('mAdminSystemStatus','Back-up is gedownload.','ok');
+    }catch(e){setStatus('mAdminSystemStatus',e.message,'err')}
+  }
+
+  async function restoreBackup(file){
+    try{
+      if(!requireConfirm('De back-up wordt teruggezet. Bestaande regels met hetzelfde ID worden overschreven.'))return;
+      setStatus('mAdminSystemStatus','Back-up wordt hersteld…','busy');
+      const parsed=JSON.parse(await file.text());
+      if(!parsed?.tables)throw new Error('Ongeldig back-upbestand.');
+      const order=['customers','fixed_appointments','planning','visit_history','visit_photos','app_absences','app_day_settings'];
+      for(const table of order){
+        const rows=parsed.tables[table]||[];
+        if(!rows.length)continue;
+        for(let i=0;i<rows.length;i+=250){
+          const {error}=await GJ_AUTH.sb.from(table).upsert(rows.slice(i,i+250));
+          if(error)throw new Error(`${table}: ${error.message}`);
+        }
+      }
+      setStatus('mAdminSystemStatus','Back-up is hersteld.','ok');
+      if(typeof window.manualSync==='function')await window.manualSync(false);
+    }catch(e){setStatus('mAdminSystemStatus',e.message,'err')}
+  }
+
+  window.addEventListener('gj-auth-ready',async ev=>{
+    const p=ev.detail.profile;
+    const isAdmin=p?.role==='admin';
+    document.body.classList.toggle('gj-admin',isAdmin);
+    document.querySelectorAll('.gjAdminOnly').forEach(el=>el.style.display=isAdmin?'':'none');
+    if(isAdmin){await loadMobileUsers();await loadTomTomStatus();}
+  });
+
+  document.addEventListener('click',async e=>{
+    const tab=e.target.closest('#adminMobile .adminTab');
+    if(tab){
+      document.querySelectorAll('#adminMobile .adminTab').forEach(x=>x.classList.remove('active'));tab.classList.add('active');
+      document.querySelectorAll('#adminMobile .adminPane').forEach(x=>x.hidden=true);
+      $('adminPane'+tab.dataset.adminTab[0].toUpperCase()+tab.dataset.adminTab.slice(1)).hidden=false;
+      return;
+    }
+    if(e.target.id==='mAdminRefreshUsers')return loadMobileUsers();
+    if(e.target.id==='mAdminCreateUser'){
+      try{
+        const body={action:'create',first_name:$('mAdminFirstName').value.trim(),last_name:$('mAdminLastName').value.trim(),email:$('mAdminEmail').value.trim(),password:$('mAdminPassword').value,role:$('mAdminRole').value,is_active:true};
+        if(!body.email||!body.password)throw new Error('Vul e-mailadres en tijdelijk wachtwoord in.');
+        if(body.password.length<8)throw new Error('Gebruik minimaal 8 tekens voor het wachtwoord.');
+        await adminCall(body);
+        ['mAdminFirstName','mAdminLastName','mAdminEmail','mAdminPassword'].forEach(id=>$(id).value='');
+        alert('Gebruiker is aangemaakt.');await loadMobileUsers();
+      }catch(err){alert('Gebruiker aanmaken mislukt: '+err.message)}
+      return;
+    }
+    const toggle=e.target.closest('.mToggleUser');
+    if(toggle){try{await adminCall({action:'set_active',user_id:toggle.dataset.id,is_active:toggle.dataset.active!=='true'});await loadMobileUsers()}catch(err){alert(err.message)}return}
+    const pw=e.target.closest('.mPasswordUser');
+    if(pw){const password=prompt('Nieuw tijdelijk wachtwoord (minimaal 8 tekens):');if(!password)return;if(password.length<8)return alert('Minimaal 8 tekens.');try{await adminCall({action:'set_password',user_id:pw.dataset.id,password});alert('Wachtwoord aangepast.')}catch(err){alert(err.message)}return}
+    const clear=e.target.closest('[data-admin-clear]');
+    if(clear)return clearAction(clear.dataset.adminClear);
+  });
+
+  $('mTomTomSave')?.addEventListener('click',async()=>{
+    try{
+      const key=$('mTomTomKey').value.trim();if(!key)throw new Error('Vul eerst de TomTom API-sleutel in.');
+      const {error}=await GJ_AUTH.sb.rpc('set_tomtom_secret',{p_key:key,p_enabled:true});if(error)throw error;
+      $('mTomTomKey').value='';await loadTomTomStatus();alert('TomTom is beveiligd opgeslagen en ingeschakeld.');
+    }catch(e){alert(e.message)}
+  });
+  $('mTomTomDisable')?.addEventListener('click',async()=>{
+    try{if(!requireConfirm('TomTom voor alle gebruikers uitschakelen?'))return;const {error}=await GJ_AUTH.sb.rpc('set_tomtom_secret',{p_key:'',p_enabled:false});if(error)throw error;await loadTomTomStatus()}catch(e){alert(e.message)}
+  });
+  $('mTomTomTest')?.addEventListener('click',async()=>{
+    try{
+      setStatus('mTomTomStatus','TomTom wordt getest…','busy');
+      const {data,error}=await GJ_AUTH.sb.functions.invoke('tomtom-proxy',{body:{action:'geocode',query:'Neerstraat 1, Den Bosch',country:'NL'}});
+      if(error)throw error;if(data?.error)throw new Error(data.error);
+      const found=Array.isArray(data?.results)&&data.results.length>0;
+      if(!found)throw new Error('TomTom gaf geen adresresultaat terug.');
+      setStatus('mTomTomStatus','TomTom werkt en gaf een geldig adresresultaat terug.','ok');
+    }catch(e){setStatus('mTomTomStatus',e.message,'err')}
+  });
+  $('mAdminBackup')?.addEventListener('click',makeBackup);
+  $('mAdminRestore')?.addEventListener('click',()=>$('mAdminRestoreFile').click());
+  $('mAdminRestoreFile')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)restoreBackup(f);e.target.value=''});
+})();
+</script>
+
+<script src="auth.js?v=7300"></script>
 </body></html>
