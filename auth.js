@@ -6,6 +6,9 @@ window.GJ_AUTH={sb,profile:null,isAdmin:false};
 const REMEMBER_KEY='gj_login_remember_v1';
 const SESSION_KEY='gj_app_open_session';
 const saved=(()=>{try{return JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null')}catch{return null}})();
+const AUTH_LANG=localStorage.getItem('gj_app_language')||'nl';
+const AUTH_TX={nl:{sub:'Log in om verder te gaan',email:'E-mailadres',password:'Wachtwoord',remember:'E-mailadres en wachtwoord onthouden',login:'Inloggen',reset:'Wachtwoord vergeten',security:'De onthouden gegevens worden alleen op dit apparaat opgeslagen.'},en:{sub:'Sign in to continue',email:'Email address',password:'Password',remember:'Remember email address and password',login:'Sign in',reset:'Forgot password',security:'Remembered details are stored only on this device.'},de:{sub:'Anmelden, um fortzufahren',email:'E-Mail-Adresse',password:'Passwort',remember:'E-Mail-Adresse und Passwort speichern',login:'Anmelden',reset:'Passwort vergessen',security:'Die gespeicherten Daten werden nur auf diesem Gerät abgelegt.'}};
+const AX=AUTH_TX[AUTH_LANG]||AUTH_TX.nl;
 const css=`<style>
 #gjAuthGate{position:fixed;inset:0;z-index:999999;background:linear-gradient(145deg,#123b73 0%,#082b63 58%,#061f49 100%);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif}
 #gjAuthCard{width:min(420px,100%);background:#fff;border:1px solid #d9e0e8;border-radius:22px;padding:24px;box-shadow:0 25px 70px #001a3d99}
@@ -18,7 +21,7 @@ const css=`<style>
 .gjUserBar{display:none!important}.gjAdminOnly{display:none!important}body:not(.gj-admin) .gjAdminOnly{display:none!important}body.gj-admin #menuPanel button.gjAdminOnly{display:grid!important}body.gj-admin #adminNavBtn.gjAdminOnly{display:flex!important}
 </style>`;
 document.head.insertAdjacentHTML('beforeend',css);
-document.body.insertAdjacentHTML('beforeend',`<div id="gjAuthGate"><div id="gjAuthCard"><img src="logo-dark-menu.png" class="gjLogo" alt="GJ Systems"><div class="gjSub">Log in om verder te gaan</div><label class="gjField">E-mailadres<input id="gjEmail" type="email" autocomplete="username"></label><label class="gjField">Wachtwoord<input id="gjPassword" type="password" autocomplete="current-password"></label><label class="gjRemember"><input id="gjRemember" type="checkbox"> E-mailadres en wachtwoord onthouden</label><button id="gjLogin" class="gjBtn">Inloggen</button><button id="gjReset" class="gjBtn secondary">Wachtwoord vergeten</button><div id="gjMsg" class="gjMsg"></div><div class="gjSecurity">De onthouden gegevens worden alleen op dit apparaat opgeslagen.</div></div></div>`);
+document.body.insertAdjacentHTML('beforeend',`<div id="gjAuthGate"><div id="gjAuthCard"><img src="logo-login.png" class="gjLogo" alt="GJ Systems"><div class="gjSub">${AX.sub}</div><label class="gjField">${AX.email}<input id="gjEmail" type="email" autocomplete="username"></label><label class="gjField">${AX.password}<input id="gjPassword" type="password" autocomplete="current-password"></label><label class="gjRemember"><input id="gjRemember" type="checkbox"> ${AX.remember}</label><button id="gjLogin" class="gjBtn">${AX.login}</button><button id="gjReset" class="gjBtn secondary">${AX.reset}</button><div id="gjMsg" class="gjMsg"></div><div class="gjSecurity">${AX.security}</div></div></div>`);
 const emailEl=document.getElementById('gjEmail');
 const passwordEl=document.getElementById('gjPassword');
 const rememberEl=document.getElementById('gjRemember');
