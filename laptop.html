@@ -1571,7 +1571,7 @@ button{background:#123b73!important}button:hover{background:#0b274d!important}bu
 /* profielfoto cropper desktop */
 .profileCropOverlay{position:fixed;inset:0;z-index:9999;background:rgba(4,15,31,.78);display:none;align-items:center;justify-content:center;padding:20px}.profileCropOverlay.open{display:flex}
 .profileCropDialog{width:390px;max-width:100%;background:#fff;border-radius:18px;padding:16px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.profileCropDialog h2{margin:0 0 12px;color:#123b73}
-.cropViewport{width:280px;height:280px;margin:0 auto;border-radius:50%;overflow:hidden;border:4px solid #d9e0e8;background:#eef2f6;touch-action:none;position:relative}.cropViewport img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0}.cropZoom{width:100%;margin:14px 0}.cropActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cropActions button{min-height:42px}.cropActions .cancel{background:#eef2f6!important;color:#123b73!important}
+.cropViewport{width:280px;height:280px;margin:0 auto;border-radius:50%;overflow:hidden;border:4px solid #d9e0e8;background:#eef2f6;touch-action:none;position:relative}.cropViewport img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0;display:block!important;visibility:visible!important;opacity:1!important;z-index:1!important;will-change:transform,width,height}.cropZoom{width:100%;margin:14px 0}.cropActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cropActions button{min-height:42px}.cropActions .cancel{background:#eef2f6!important;color:#123b73!important}
 
 .uiIcon{width:1.15em;height:1.15em;display:inline-block;vertical-align:-.18em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 </style>
@@ -4292,19 +4292,36 @@ document.addEventListener("DOMContentLoaded",()=>{
 function setupProfileCropper(fileInput,button,imageEl){
   const overlay=document.getElementById('profileCropOverlay'), viewport=document.getElementById('cropViewport'), cropImg=document.getElementById('cropImage'), zoom=document.getElementById('cropZoom');
   if(!overlay||!viewport||!cropImg||!zoom||!fileInput||!button||!imageEl)return;
-  let base=1,scale=1,x=0,y=0,drag=false,sx=0,sy=0,ox=0,oy=0,naturalW=1,naturalH=1;
-  const size=()=>viewport.clientWidth;
-  const clamp=()=>{const w=naturalW*base*scale,h=naturalH*base*scale,s=size();x=Math.min(0,Math.max(s-w,x));y=Math.min(0,Math.max(s-h,y));};
-  const draw=()=>{clamp();cropImg.style.width=(naturalW*base*scale)+'px';cropImg.style.height=(naturalH*base*scale)+'px';cropImg.style.transform='translate('+x+'px,'+y+'px)';};
-  const openFile=file=>{if(!file)return;if(file.size>8000000){alert('Kies een foto kleiner dan 8 MB.');return}const r=new FileReader();r.onload=()=>{cropImg.onload=()=>{naturalW=cropImg.naturalWidth;naturalH=cropImg.naturalHeight;const s=size();base=Math.max(s/naturalW,s/naturalH);scale=1;zoom.value='1';x=(s-naturalW*base)/2;y=(s-naturalH*base)/2;draw();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false')};cropImg.src=r.result};r.readAsDataURL(file)};
+  let base=1,scale=1,x=0,y=0,naturalW=1,naturalH=1;
+  let pointers=new Map(),startX=0,startY=0,startImageX=0,startImageY=0,startDistance=0,startScale=1;
+  const viewSize=()=>Math.max(1,viewport.getBoundingClientRect().width);
+  const clamp=()=>{const s=viewSize(),w=naturalW*base*scale,h=naturalH*base*scale;x=Math.min(0,Math.max(s-w,x));y=Math.min(0,Math.max(s-h,y));};
+  const draw=()=>{clamp();cropImg.style.width=(naturalW*base*scale)+'px';cropImg.style.height=(naturalH*base*scale)+'px';cropImg.style.transform='translate3d('+x+'px,'+y+'px,0)';};
+  const openFile=file=>{
+    if(!file)return;
+    if(file.size>8000000){alert('Kies een foto kleiner dan 8 MB.');return;}
+    const r=new FileReader();
+    r.onload=()=>{
+      overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
+      cropImg.onload=()=>requestAnimationFrame(()=>{
+        naturalW=cropImg.naturalWidth||1;naturalH=cropImg.naturalHeight||1;
+        const s=viewSize();base=Math.max(s/naturalW,s/naturalH);scale=1;zoom.value='1';
+        x=(s-naturalW*base)/2;y=(s-naturalH*base)/2;draw();
+      });
+      cropImg.src=r.result;
+    };
+    r.readAsDataURL(file);
+  };
   button.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',e=>{openFile(e.target.files&&e.target.files[0]);e.target.value=''});
-  zoom.addEventListener('input',()=>{const old=scale;const s=size(),cx=(s/2-x)/(base*old),cy=(s/2-y)/(base*old);scale=parseFloat(zoom.value);x=s/2-cx*base*scale;y=s/2-cy*base*scale;draw()});
-  const start=e=>{drag=true;const p=e.touches?e.touches[0]:e;sx=p.clientX;sy=p.clientY;ox=x;oy=y;e.preventDefault()};
-  const move=e=>{if(!drag)return;const p=e.touches?e.touches[0]:e;x=ox+p.clientX-sx;y=oy+p.clientY-sy;draw();e.preventDefault()};
-  const end=()=>{drag=false};viewport.addEventListener('mousedown',start);viewport.addEventListener('touchstart',start,{passive:false});window.addEventListener('mousemove',move);window.addEventListener('touchmove',move,{passive:false});window.addEventListener('mouseup',end);window.addEventListener('touchend',end);
-  document.getElementById('cropCancel').addEventListener('click',()=>overlay.classList.remove('open'));
-  document.getElementById('cropSave').addEventListener('click',()=>{const s=512,view=size(),canvas=document.createElement('canvas');canvas.width=s;canvas.height=s;const ctx=canvas.getContext('2d');ctx.drawImage(cropImg,(x/view)*s,(y/view)*s,(naturalW*base*scale/view)*s,(naturalH*base*scale/view)*s);const data=canvas.toDataURL('image/jpeg',.88);localStorage.setItem('gj_profile_photo',data);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}))});
+  fileInput.addEventListener('change',e=>{openFile(e.target.files&&e.target.files[0]);e.target.value='';});
+  zoom.addEventListener('input',()=>{const old=scale,s=viewSize(),cx=(s/2-x)/(base*old),cy=(s/2-y)/(base*old);scale=parseFloat(zoom.value);x=s/2-cx*base*scale;y=s/2-cy*base*scale;draw();});
+  const distance=()=>{const p=[...pointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+  viewport.addEventListener('pointerdown',e=>{viewport.setPointerCapture?.(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){startX=e.clientX;startY=e.clientY;startImageX=x;startImageY=y;}else if(pointers.size===2){startDistance=distance();startScale=scale;}e.preventDefault();});
+  viewport.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){x=startImageX+e.clientX-startX;y=startImageY+e.clientY-startY;}else if(pointers.size===2){const s=viewSize(),old=scale,midX=s/2,midY=s/2;scale=Math.max(1,Math.min(3,startScale*(distance()/Math.max(1,startDistance))));zoom.value=String(scale);const cx=(midX-x)/(base*old),cy=(midY-y)/(base*old);x=midX-cx*base*scale;y=midY-cy*base*scale;}draw();e.preventDefault();});
+  const pointerEnd=e=>{pointers.delete(e.pointerId);if(pointers.size===1){const p=[...pointers.values()][0];startX=p.x;startY=p.y;startImageX=x;startImageY=y;}else if(pointers.size===0){startDistance=0;} };
+  viewport.addEventListener('pointerup',pointerEnd);viewport.addEventListener('pointercancel',pointerEnd);
+  document.getElementById('cropCancel').addEventListener('click',()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');cropImg.removeAttribute('src');});
+  document.getElementById('cropSave').addEventListener('click',()=>{const out=512,view=viewSize(),canvas=document.createElement('canvas');canvas.width=out;canvas.height=out;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out,out);ctx.drawImage(cropImg,(x/view)*out,(y/view)*out,(naturalW*base*scale/view)*out,(naturalH*base*scale/view)*out);const data=canvas.toDataURL('image/jpeg',.9);localStorage.setItem('gj_profile_photo',data);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}));});
 }
 
   const profileButton=$('desktopProfileButton'), profileFile=$('desktopProfileFile'), profileImage=$('desktopProfileImage');

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Planning-GJsystems v8.1 Premium UI Refresh</title>
+<title>Planning-GJsystems v8.2 Compact Fields & Profile Crop</title>
 <script>
 // v6: failsafe tegen blijven hangen op beginscherm/logo
-window.__GJ_APP_VERSION__='8.1';
+window.__GJ_APP_VERSION__='8.2';
 (function(){
   function hideSplash(){
     var s=document.getElementById('splash');
@@ -136,6 +136,40 @@ body:not(.gj-admin) #adminMobile{display:none!important}
 .profileCropOverlay.open{display:flex}.profileCropDialog{width:min(360px,100%);background:#fff;border-radius:18px;padding:14px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .profileCropDialog h2{margin:0 0 10px;color:#123b73}.cropViewport{width:240px;height:240px;max-width:72vw;max-height:72vw;margin:0 auto;border-radius:50%;overflow:hidden;border:4px solid #d9e0e8;background:#eef2f6;touch-action:none;position:relative}
 .cropViewport img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0}.cropZoom{width:100%;margin:12px 0}.cropActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cropActions button{min-height:40px}.cropActions .cancel{background:#eef2f6!important;color:#123b73!important}
+
+
+/* v8.2: compacte, gecentreerde invoervelden op Vandaag en Afwezigheid */
+#today .todayControls{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;align-items:end!important;overflow:visible!important}
+#today .todayControls>label{min-width:0!important;overflow:visible!important;gap:4px!important}
+#today .todayControls input,#today .todayControls select{
+  height:34px!important;min-height:34px!important;padding:3px 28px 3px 30px!important;
+  font-size:16px!important;font-weight:800!important;line-height:28px!important;text-align:center!important;
+}
+#today .fieldWithIcon .fieldIcon{left:9px!important;bottom:8px!important;font-size:17px!important}
+#today .todayControls select{text-align-last:center!important}
+#absence .panel{padding:9px!important}
+#absence .form{gap:8px!important}
+#absence .form>label:first-child select{height:34px!important;min-height:34px!important;font-size:15px!important;padding:3px 28px 3px 10px!important;line-height:28px!important}
+#absence .formRow{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;width:100%!important;overflow:visible!important}
+#absence .formRow>label{min-width:0!important;width:100%!important;overflow:visible!important;gap:4px!important}
+#absence input[type="date"],#absence input[type="time"]{
+  height:34px!important;min-height:34px!important;padding:2px 5px!important;font-size:14px!important;
+  font-weight:700!important;line-height:28px!important;text-align:center!important;
+}
+#absence input[type="date"]::-webkit-date-and-time-value,#absence input[type="time"]::-webkit-date-and-time-value{text-align:center!important}
+#absence input[type="date"]::-webkit-calendar-picker-indicator,#absence input[type="time"]::-webkit-calendar-picker-indicator{margin:0!important;padding:0!important;opacity:.75}
+#absence label{font-size:10.5px!important;gap:4px!important}
+#absence textarea{height:64px!important;min-height:64px!important;font-size:14px!important;padding:7px!important}
+#absence #saveBlock{min-height:34px!important;height:34px!important;margin-top:1px!important;font-size:13px!important}
+@media(max-width:360px){
+ #today .todayControls,#absence .formRow{gap:7px!important}
+ #today .todayControls input,#today .todayControls select{font-size:14px!important;padding-left:25px!important;padding-right:22px!important}
+ #absence input[type="date"],#absence input[type="time"]{font-size:12.5px!important;padding:2px 3px!important}
+}
+/* v8.2: foto moet altijd zichtbaar zijn achter de ronde cropcirkel */
+.cropViewport{isolation:isolate;background:#dfe5ec!important}
+.cropViewport::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.8);z-index:2}
+.cropViewport img{display:block!important;visibility:visible!important;opacity:1!important;z-index:1!important;will-change:transform,width,height}
 
 </style>
 
@@ -410,19 +444,36 @@ async function finish(status){
 function setupProfileCropper(fileInput,button,imageEl){
   const overlay=document.getElementById('profileCropOverlay'), viewport=document.getElementById('cropViewport'), cropImg=document.getElementById('cropImage'), zoom=document.getElementById('cropZoom');
   if(!overlay||!viewport||!cropImg||!zoom||!fileInput||!button||!imageEl)return;
-  let base=1,scale=1,x=0,y=0,drag=false,sx=0,sy=0,ox=0,oy=0,naturalW=1,naturalH=1;
-  const size=()=>viewport.clientWidth;
-  const clamp=()=>{const w=naturalW*base*scale,h=naturalH*base*scale,s=size();x=Math.min(0,Math.max(s-w,x));y=Math.min(0,Math.max(s-h,y));};
-  const draw=()=>{clamp();cropImg.style.width=(naturalW*base*scale)+'px';cropImg.style.height=(naturalH*base*scale)+'px';cropImg.style.transform='translate('+x+'px,'+y+'px)';};
-  const openFile=file=>{if(!file)return;if(file.size>8000000){alert('Kies een foto kleiner dan 8 MB.');return}const r=new FileReader();r.onload=()=>{cropImg.onload=()=>{naturalW=cropImg.naturalWidth;naturalH=cropImg.naturalHeight;const s=size();base=Math.max(s/naturalW,s/naturalH);scale=1;zoom.value='1';x=(s-naturalW*base)/2;y=(s-naturalH*base)/2;draw();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false')};cropImg.src=r.result};r.readAsDataURL(file)};
+  let base=1,scale=1,x=0,y=0,naturalW=1,naturalH=1;
+  let pointers=new Map(),startX=0,startY=0,startImageX=0,startImageY=0,startDistance=0,startScale=1;
+  const viewSize=()=>Math.max(1,viewport.getBoundingClientRect().width);
+  const clamp=()=>{const s=viewSize(),w=naturalW*base*scale,h=naturalH*base*scale;x=Math.min(0,Math.max(s-w,x));y=Math.min(0,Math.max(s-h,y));};
+  const draw=()=>{clamp();cropImg.style.width=(naturalW*base*scale)+'px';cropImg.style.height=(naturalH*base*scale)+'px';cropImg.style.transform='translate3d('+x+'px,'+y+'px,0)';};
+  const openFile=file=>{
+    if(!file)return;
+    if(file.size>8000000){alert('Kies een foto kleiner dan 8 MB.');return;}
+    const r=new FileReader();
+    r.onload=()=>{
+      overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
+      cropImg.onload=()=>requestAnimationFrame(()=>{
+        naturalW=cropImg.naturalWidth||1;naturalH=cropImg.naturalHeight||1;
+        const s=viewSize();base=Math.max(s/naturalW,s/naturalH);scale=1;zoom.value='1';
+        x=(s-naturalW*base)/2;y=(s-naturalH*base)/2;draw();
+      });
+      cropImg.src=r.result;
+    };
+    r.readAsDataURL(file);
+  };
   button.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',e=>{openFile(e.target.files&&e.target.files[0]);e.target.value=''});
-  zoom.addEventListener('input',()=>{const old=scale;const s=size(),cx=(s/2-x)/(base*old),cy=(s/2-y)/(base*old);scale=parseFloat(zoom.value);x=s/2-cx*base*scale;y=s/2-cy*base*scale;draw()});
-  const start=e=>{drag=true;const p=e.touches?e.touches[0]:e;sx=p.clientX;sy=p.clientY;ox=x;oy=y;e.preventDefault()};
-  const move=e=>{if(!drag)return;const p=e.touches?e.touches[0]:e;x=ox+p.clientX-sx;y=oy+p.clientY-sy;draw();e.preventDefault()};
-  const end=()=>{drag=false};viewport.addEventListener('mousedown',start);viewport.addEventListener('touchstart',start,{passive:false});window.addEventListener('mousemove',move);window.addEventListener('touchmove',move,{passive:false});window.addEventListener('mouseup',end);window.addEventListener('touchend',end);
-  document.getElementById('cropCancel').addEventListener('click',()=>overlay.classList.remove('open'));
-  document.getElementById('cropSave').addEventListener('click',()=>{const s=512,view=size(),canvas=document.createElement('canvas');canvas.width=s;canvas.height=s;const ctx=canvas.getContext('2d');ctx.drawImage(cropImg,(x/view)*s,(y/view)*s,(naturalW*base*scale/view)*s,(naturalH*base*scale/view)*s);const data=canvas.toDataURL('image/jpeg',.88);localStorage.setItem('gj_profile_photo',data);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}))});
+  fileInput.addEventListener('change',e=>{openFile(e.target.files&&e.target.files[0]);e.target.value='';});
+  zoom.addEventListener('input',()=>{const old=scale,s=viewSize(),cx=(s/2-x)/(base*old),cy=(s/2-y)/(base*old);scale=parseFloat(zoom.value);x=s/2-cx*base*scale;y=s/2-cy*base*scale;draw();});
+  const distance=()=>{const p=[...pointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+  viewport.addEventListener('pointerdown',e=>{viewport.setPointerCapture?.(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){startX=e.clientX;startY=e.clientY;startImageX=x;startImageY=y;}else if(pointers.size===2){startDistance=distance();startScale=scale;}e.preventDefault();});
+  viewport.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){x=startImageX+e.clientX-startX;y=startImageY+e.clientY-startY;}else if(pointers.size===2){const s=viewSize(),old=scale,midX=s/2,midY=s/2;scale=Math.max(1,Math.min(3,startScale*(distance()/Math.max(1,startDistance))));zoom.value=String(scale);const cx=(midX-x)/(base*old),cy=(midY-y)/(base*old);x=midX-cx*base*scale;y=midY-cy*base*scale;}draw();e.preventDefault();});
+  const pointerEnd=e=>{pointers.delete(e.pointerId);if(pointers.size===1){const p=[...pointers.values()][0];startX=p.x;startY=p.y;startImageX=x;startImageY=y;}else if(pointers.size===0){startDistance=0;} };
+  viewport.addEventListener('pointerup',pointerEnd);viewport.addEventListener('pointercancel',pointerEnd);
+  document.getElementById('cropCancel').addEventListener('click',()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');cropImg.removeAttribute('src');});
+  document.getElementById('cropSave').addEventListener('click',()=>{const out=512,view=viewSize(),canvas=document.createElement('canvas');canvas.width=out;canvas.height=out;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out,out);ctx.drawImage(cropImg,(x/view)*out,(y/view)*out,(naturalW*base*scale/view)*out,(naturalH*base*scale/view)*out);const data=canvas.toDataURL('image/jpeg',.9);localStorage.setItem('gj_profile_photo',data);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}));});
 }
 
 async function init(){console.info('Planning GJ mobiel v8.1 Premium UI - centrale Supabase planning');db=load();const supaOk=await loadPlanningFromSupabase();if(!supaOk){seedDemo();syncDemoDate();recalcAll(false);}applyTheme();$('lang').value=db.settings.language||'nl';$('depart').value=(db.dayDepartures||{})[todayIso()]||'08:00';$('blockStart').value=todayIso();$('blockEnd').value=addDaysIso(todayIso(),1);$('blockEnd').min=addDaysIso(todayIso(),1);$('menuBtn').onclick=()=>$('menuPanel').classList.toggle('open');const savedProfilePhoto=localStorage.getItem('gj_profile_photo');if(savedProfilePhoto){$('profileImage').src=savedProfilePhoto;$('profileButton').classList.add('hasPhoto')}setupProfileCropper($('profileFile'),$('profileButton'),$('profileImage'));$('menuLogout').onclick=async()=>{try{if(window.GJ_AUTH?.sb)await GJ_AUTH.sb.auth.signOut()}finally{location.reload()}};$('syncBtn').onclick=()=>manualSync(true);$('btnTakePhoto').onclick=()=>$('finishCamera').click();$('btnChoosePhoto').onclick=()=>$('finishPhotos').click();$('finishCamera').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};$('finishPhotos').onchange=e=>{addSelectedPhotos(e.target.files);e.target.value=''};document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')manualSync(false)});window.addEventListener('focus',()=>manualSync(false));document.querySelectorAll('#menuPanel button[data-screen]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(b.dataset.screen).classList.add('active');document.querySelectorAll('#menuPanel button[data-screen]').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('menuPanel').classList.remove('open');renderAll()});document.addEventListener('click',e=>{const r=e.target.closest('.routeBtn');if(r){location.href=navUrl(r.dataset.q);return}const f=e.target.closest('.finishBtn');if(f){openFinish(f.dataset.id);return}const up=e.target.closest('.moveUp');if(up){move(up.dataset.id,-1);return}const down=e.target.closest('.moveDown');if(down){move(down.dataset.id,1);return}const eye=e.target.closest('.eyeBtn');if(eye){editingTime=eye.dataset.id;renderToday();return}const sv=e.target.closest('.saveTimeBtn');if(sv){const v=db.visits.find(x=>x.id===sv.dataset.id);if(v){v.time=$('editStart-'+v.id).value;v.end=$('editEnd-'+v.id).value;editingTime=null;save();renderAll();syncPlanningToSupabase().catch(console.error)}return}const rem=e.target.closest('.removePlan');if(rem){if(confirm(t('removeConfirm'))){const v=db.visits.find(x=>x.id===rem.dataset.id);if(v){v.status='Uit planning';save();renderAll()}}return}const day=e.target.closest('.monthDay');if(day){openDay(day.dataset.date);return}if(e.target.id==='finishOverlay')closeFinish()});$('depart').onchange=async()=>{try{await saveDepartureToSupabase(todayIso(),$('depart').value)}catch(e){alert('Vertrektijd opslaan mislukt: '+e.message)}};$('fullRouteBtn').onclick=()=>{location.href=fullRouteUrl()};$('togglePause').onclick=()=>{db.visits.filter(v=>v.pause&&v.date===todayIso()).forEach(v=>v.active=v.active===false?true:false);save();renderAll()};$('recalcBtn').onclick=()=>manualSync(true);$('prevMonth').onclick=()=>{monthOffset--;renderAll()};$('nextMonth').onclick=()=>{monthOffset++;renderAll()};$('search').oninput=renderOverview;$('finishClose').onclick=closeFinish;$('btnDone').onclick=()=>finish('Uitgevoerd');$('btnNotDone').onclick=()=>finish('Niet uitgevoerd');$('blockStart').onchange=()=>{const end=addDaysIso($('blockStart').value,1);$('blockEnd').value=end;$('blockEnd').min=end};$('blockEnd').onchange=()=>{const min=addDaysIso($('blockStart').value,1);if($('blockEnd').value<min)$('blockEnd').value=min};$('saveBlock').onclick=async()=>{if(!$('blockStart').value)return alert('Vul startdatum in.');if(!$('blockEnd').value)$('blockEnd').value=$('blockStart').value;const b={id:'b-'+Date.now(),type:$('blockType').value,start:$('blockStart').value,end:$('blockEnd').value||$('blockStart').value,startTime:$('blockStartTime').value,endTime:$('blockEndTime').value,note:$('blockNote').value};try{await saveAbsenceToSupabase(b);db.blocks.push(b);save();renderAll();alert(t('absenceSaved'))}catch(e){alert('Afwezigheid opslaan mislukt: '+e.message)}};$('lang').onchange=()=>{db.settings.language=$('lang').value;save();renderAll()};$('saveSettings').onclick=()=>{db.settings.language=$('lang').value;if($('defaultSettings').checked){localStorage.setItem('gj_theme',db.settings.theme);localStorage.setItem('gj_app_language',db.settings.language)}save();renderAll();alert(t('settingsSaved'))};renderAll();openDay(selectedCalendarDate);setTimeout(()=>{const sp=$('splash'); if(sp){sp.classList.add('hide'); sp.style.display='none'}},700)}
