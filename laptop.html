@@ -1345,7 +1345,7 @@ input[placeholder*="zoek"],
 #settings .checks label{font-size:12px!important;gap:6px!important;flex-direction:row!important;align-items:center!important}
 #settings .checks input{width:auto!important;height:auto!important}
 #settings #btnSaveSettings{margin-top:4px!important;padding:8px 12px!important}
-#settings .dangerZone{margin-top:12px!important;padding-top:10px!important}
+#settings .navSettings{margin-top:12px!important;padding-top:10px!important}
 #settings .navSettings .formGrid.settings{grid-template-columns:260px 220px!important;margin:4px 0!important}
 #settings .beheerGrid{grid-template-columns:repeat(4,minmax(150px,1fr))!important;gap:8px!important;margin-top:8px!important}
 #settings .beheerItem{padding:8px!important;border-radius:10px!important;gap:3px!important}
@@ -1505,6 +1505,28 @@ button{background:var(--primary)}button:hover{background:var(--primary-dark)}but
 .syncStatus.err{background:#fbefef;color:#b42318;border-color:#f5b7b7}
 .syncStatus.busy{background:#eef4fb;color:#254b7e;border-color:#d9e6f4}
 
+
+/* v7.4: beheerfuncties uitsluitend binnen de module Beheer */
+body .adminTabs:not(#admin .adminTabs),
+body .adminPane:not(#admin .adminPane),
+body .beheerGrid:not(#admin .beheerGrid),
+body [id^="adminPane"]:not(#admin [id^="adminPane"]),
+body [id^="btnAdmin"]:not(#admin [id^="btnAdmin"]),
+body #saveTomTomSecure:not(#admin #saveTomTomSecure),
+body #disableTomTomSecure:not(#admin #disableTomTomSecure),
+body #tomtomSecureStatus:not(#admin #tomtomSecureStatus),
+body #btnClearPlanning:not(#admin #btnClearPlanning),
+body #btnClearFixed:not(#admin #btnClearFixed),
+body #btnClearUnplanned:not(#admin #btnClearUnplanned),
+body #btnClearHistory:not(#admin #btnClearHistory),
+body #btnClearRoutes:not(#admin #btnClearRoutes),
+body #btnClearDatabase:not(#admin #btnClearDatabase),
+body #btnResetAll:not(#admin #btnResetAll),
+body #btnBackup:not(#admin #btnBackup),
+body #btnRestore:not(#admin #btnRestore){
+  display:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -1630,7 +1652,7 @@ button{background:var(--primary)}button:hover{background:var(--primary-dark)}but
 
 <section id="admin" class="screen gjAdminOnly">
   <div class="panel">
-    <div class="sectionHead"><div><h2>Beheer</h2><p class="muted">Alleen zichtbaar voor beheerders.</p></div></div>
+    <div class="sectionHead"><div><h2>Beheer</h2><p class="muted">Alle beheerdersfuncties staan uitsluitend op deze pagina.</p></div></div>
     <div class="adminTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button type="button" class="secondary adminTab active" data-admin-tab="users">Gebruikers</button>
       <button type="button" class="secondary adminTab" data-admin-tab="tomtom">TomTom</button>
@@ -1732,7 +1754,7 @@ button{background:var(--primary)}button:hover{background:var(--primary-dark)}but
   </div>
 
   <button id="btnSaveSettings">Instellingen opslaan</button>
-<div class="dangerZone navSettings">
+<div class="navSettings">
   <h2>Navigatie</h2>
   <div class="formGrid settings">
     <label>Standaard navigatie-app
@@ -2172,7 +2194,7 @@ function ensureFreshDayStats(date){
 function routeStatsForDay(date){const vs=visitsOn(date);if(!vs.length)return null;const points=[startPoint(),...vs.map(v=>getC(v.customerId)).filter(Boolean),startPoint()];let kmTotal=0,driveMinTotal=0,complete=true;for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1];const d=km(a,b);const mode=(i>0&&i<points.length-2&&d!==null&&d*1000<=num(db.settings.walk,300))?"walk":"car";const cached=(hasCoords(a)&&hasCoords(b))?db.routeCache?.[routeKey(a,b,mode)]:null;if(!cached){complete=false;break}kmTotal+=num(cached.km,0);driveMinTotal+=num(cached.min,0)}if(!complete)return null;const depart=t2m(chooseBestDayDeparture(date,vs));const visitMinutes=vs.reduce((s,v)=>s+num(v.duration||getC(v.customerId)?.Bezoektijd,60),0);const parkingMinutes=vs.length*num(db.settings.parking,15);const breakMinutes=(breakEnabled(date)&&vs.length)?num(db.settings.break,30):0;const totalMinutes=driveMinTotal+visitMinutes+parkingMinutes+breakMinutes;const endMin=depart+totalMinutes;return{km:Math.round(kmTotal),driveMin:Math.round(driveMinTotal),totalMin:Math.round(totalMinutes),start:chooseBestDayDeparture(date,vs),end:m2t(endMin),calculated:true}}
 function saveRouteStats(date){if(!db.routeStats)db.routeStats={};const stats=routeStatsForDay(date);if(stats)db.routeStats[date]=stats;else delete db.routeStats[date]} function invalidateDayStats(date){if(date&&db.routeStats)delete db.routeStats[date]}
 async function calculateDayRoutes(date,rerender=true){const vs=visitsOn(date);if(!vs.length){invalidateDayStats(date);if(rerender)render();return}const points=[startPoint(),...vs.map(v=>getC(v.customerId)).filter(Boolean),startPoint()];for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1];const d=km(a,b);const mode=(i>0&&i<points.length-2&&d!==null&&d*1000<=num(db.settings.walk,300))?"walk":"car";await tomtomRoute(a,b,mode)}saveRouteStats(date);save();if(rerender)render()}
-async function refreshDayRoute(date){if(!date)return;invalidateDayStats(date);if(str(db.settings.tomtom)&&visitsOn(date).length){try{await calculateDayRoutes(date,false)}catch(e){console.warn(e)}}saveRouteStats(date);save();render()} async function refreshChangedDays(dates){const unique=[...new Set((dates||[]).filter(Boolean))];unique.forEach(invalidateDayStats);if(str(db.settings.tomtom)){for(const d of unique){if(visitsOn(d).length){try{await calculateDayRoutes(d,false)}catch(e){console.warn(e)}}}}unique.forEach(saveRouteStats);save();render()}
+async function refreshDayRoute(date){if(!date)return;invalidateDayStats(date);if(str(db.settings.tomtom)&&visitsOn(date).length){try{await calculateDayRoutes(date,false)}catch(e){console.warn(e)}}saveRouteStats(date);save();render()} async function refreshChangedDays(dates){const unique=[...new Set((dates||[]).filter(Boolean))];unique.forEach(invalidateDayStats);if(window.GJ_TOMTOM_ENABLED===true){for(const d of unique){if(visitsOn(d).length){try{await calculateDayRoutes(d,false)}catch(e){console.warn(e)}}}}unique.forEach(saveRouteStats);save();render()}
 async function calculateRoutesForDates(dates,showProgress=false){const unique=[...new Set(dates)].filter(d=>visitsOn(d).length);if(!unique.length)return;if(showProgress)$("progressDialog")?.showModal();for(let i=0;i<unique.length;i++){if(showProgress){const pct=Math.round(((i+1)/unique.length)*100);$("progressText").textContent=`Dagroute ${i+1} van ${unique.length} berekenen...`;$("progressFill").style.width=pct+"%";await new Promise(r=>setTimeout(r,20))}await calculateDayRoutes(unique[i],false);saveRouteStats(unique[i])}save();if(showProgress){$("progressText").textContent=`Klaar: ${unique.length} dagroutes berekend.`;$("progressFill").style.width="100%";await new Promise(r=>setTimeout(r,600));$("progressDialog")?.close()}render()}
 function setDayDeparture(date,value){if(!db.dayDepartures)db.dayDepartures={};if(value)db.dayDepartures[date]=value;else delete db.dayDepartures[date];save();refreshDayRoute(date)} function toggleOrderEdit(date){if(state.editingOrder){visitsOn(date).forEach((v,i)=>v.order=i+1);state.editingOrder=false;save();if(window.gjSyncDayOrderToSupabase)window.gjSyncDayOrderToSupabase(date);refreshDayRoute(date)}else{state.editingOrder=true;render()}} function moveVisitOrder(id,dir){const v=db.visits.find(x=>x.id===id);if(!v||!v.date)return;const dayVisits=visitsOn(v.date);const idx=dayVisits.findIndex(x=>x.id===id),ni=idx+dir;if(idx<0||ni<0||ni>=dayVisits.length)return;const arr=[...dayVisits];const[item]=arr.splice(idx,1);arr.splice(ni,0,item);arr.forEach((x,i)=>x.order=i+1);save();if(window.gjSyncDayOrderToSupabase)window.gjSyncDayOrderToSupabase(v.date);refreshDayRoute(v.date)}
 
@@ -2756,7 +2778,7 @@ async function optimizeSelectedDay(){
   closeActionMenus();
   optimizeDayOrder(state.selected);
   save();
-  if(str(db.settings.tomtom)){
+  if(window.GJ_TOMTOM_ENABLED===true){
     await calculateDayRoutes(state.selected,true);
   }else{
     invalidateDayStats(state.selected);
@@ -2769,7 +2791,7 @@ async function optimizeSelectedWeek(){
   const days=allDatesBetween(dateObj(r.start),dateObj(r.end)).map(iso);
   days.forEach(d=>optimizeDayOrder(d));
   save();
-  if(str(db.settings.tomtom)){
+  if(window.GJ_TOMTOM_ENABLED===true){
     await calculateRoutesForDates(days,true);
   }else{
     days.forEach(invalidateDayStats);
@@ -3278,7 +3300,7 @@ async function generatePlanning(){
   }
   save(); render();
   const routeDates=[...new Set(db.visits.filter(v=>v.date>=from&&v.date<=to&&v.status!=='Uit planning').map(v=>v.date))];
-  if(str(db.settings.tomtom))await calculateRoutesForDates(routeDates,true);
+  if(window.GJ_TOMTOM_ENABLED===true)await calculateRoutesForDates(routeDates,true);
   routeDates.forEach(optimizeDayOrder); save(); render();
   if(window.savePlanningToSupabase){try{await window.savePlanningToSupabase(from,to,replace)}catch(e){console.error(e);alert('Planning lokaal gemaakt, maar opslaan in Supabase mislukte: '+(e.message||e));}}
   showPlanningReport(buildPlanningReport(from,to,requests.length,notPlaced));
@@ -3477,7 +3499,7 @@ function partialBlockForDate(date){
 
 function addBlock(){if(!$("blockStart").value)return;let end=$("blockEnd").value||$("blockStart").value;if(end<$("blockStart").value)end=$("blockStart").value;db.blocks.push({id:uuid(),type:$("blockType").value,start:$("blockStart").value,end,startTime:$("blockStartTime").value,endTime:$("blockEndTime").value,note:$("blockNote").value});db.routeStats={};save();render()} function delBlock(id){db.blocks=db.blocks.filter(b=>b.id!==id);db.routeStats={};save();render()} function addFixed(){const val=$("fixedCustomer").value,id=val.split(" - ")[0].trim(),c=getC(id)||db.customers.find(x=>low(x.Winkel)===low(val));if(!c||!$("fixedDate").value)return alert("Kies klant en datum.");const vid=uuid(),f={id:uuid(),visitId:vid,customerId:c.ID,date:$("fixedDate").value,time:$("fixedTime").value,duration:$("fixedDuration").value,note:$("fixedNote").value};db.fixed.push(f);db.visits.push({id:vid,customerId:c.ID,date:f.date,time:f.time,status:"Vast",duration:f.duration});save();refreshDayRoute(f.date)} function unfixFixedAppointment(id){const f=db.fixed.find(x=>x.id===id);if(!f)return;const v=db.visits.find(x=>x.id===f.visitId);if(v){v.status="Gepland";v.time="";}db.fixed=db.fixed.filter(x=>x.id!==id);db.routeStats={};save();refreshDayRoute(f.date);alert("Vaste afspraak losgemaakt. Dit bezoek is nu weer herplanbaar.")}
 function readParttimeSettings(){const out={};[0,1,2,3,4,5,6].forEach(d=>{const even=$("pt"+d+"even")?.checked||false,odd=$("pt"+d+"odd")?.checked||false;if(even||odd)out[d]={even,odd}});return out}
-function saveSettings(){db.settings={start:$("setStart").value,depart:$("setDepart").value,home:$("setHome").value,max:num($("setMax").value,4),maxWorkday:num($("setMaxWorkday").value,8.5),theme:selectedTheme(),parking:num($("setParking").value,15),break:num($("setBreak").value,30),walk:num($("setWalk").value,300),tomtom:$("setLive").value,homeDayEnabled:$("setHomeDayEnabled").checked,homeDay:num($("setHomeDay").value,5),parttimeDays:readParttimeSettings(),nlHoliday:$("setNLHoliday").checked,beHoliday:$("setBEHoliday").checked};db.navPrefs={app:$("setNavApp").value,ask:$("setNavAsk").checked};db.routeStats={};save();render()} function fillSettings(){normalizeSettings();const s=db.settings;applyTheme(s.theme||"blue");document.querySelectorAll('input[name="themeMode"]').forEach(x=>x.checked=x.value===(s.theme||"blue"));$("setStart").value=s.start;$("setDepart").value=s.depart;$("setHome").value=s.home;$("setMax").value=s.max;$("setMaxWorkday").value=s.maxWorkday??8.5;$("setParking").value=s.parking;$("setBreak").value=s.break;$("setWalk").value=s.walk;$("setLive").value=s.tomtom||"";$("setHomeDayEnabled").checked=s.homeDayEnabled!==false;$("setHomeDay").value=String(s.homeDay??5);[0,1,2,3,4,5,6].forEach(d=>{const cfg=(s.parttimeDays||{})[d]||(s.parttimeDays||{})[String(d)]||{};if($("pt"+d+"even"))$("pt"+d+"even").checked=!!cfg.even;if($("pt"+d+"odd"))$("pt"+d+"odd").checked=!!cfg.odd});$("setNLHoliday").checked=s.nlHoliday!==false;$("setBEHoliday").checked=s.beHoliday!==false;if($("setNavApp"))$("setNavApp").value=db.navPrefs?.app||"google";if($("setNavAsk"))$("setNavAsk").checked=db.navPrefs?.ask!==false}
+function saveSettings(){db.settings={start:$("setStart").value,depart:$("setDepart").value,home:$("setHome").value,max:num($("setMax").value,4),maxWorkday:num($("setMaxWorkday").value,8.5),theme:selectedTheme(),parking:num($("setParking").value,15),break:num($("setBreak").value,30),walk:num($("setWalk").value,300),tomtom:"",homeDayEnabled:$("setHomeDayEnabled").checked,homeDay:num($("setHomeDay").value,5),parttimeDays:readParttimeSettings(),nlHoliday:$("setNLHoliday").checked,beHoliday:$("setBEHoliday").checked};db.navPrefs={app:$("setNavApp").value,ask:$("setNavAsk").checked};db.routeStats={};save();render()} function fillSettings(){normalizeSettings();const s=db.settings;applyTheme(s.theme||"blue");document.querySelectorAll('input[name="themeMode"]').forEach(x=>x.checked=x.value===(s.theme||"blue"));$("setStart").value=s.start;$("setDepart").value=s.depart;$("setHome").value=s.home;$("setMax").value=s.max;$("setMaxWorkday").value=s.maxWorkday??8.5;$("setParking").value=s.parking;$("setBreak").value=s.break;$("setWalk").value=s.walk;$("setHomeDayEnabled").checked=s.homeDayEnabled!==false;$("setHomeDay").value=String(s.homeDay??5);[0,1,2,3,4,5,6].forEach(d=>{const cfg=(s.parttimeDays||{})[d]||(s.parttimeDays||{})[String(d)]||{};if($("pt"+d+"even"))$("pt"+d+"even").checked=!!cfg.even;if($("pt"+d+"odd"))$("pt"+d+"odd").checked=!!cfg.odd});$("setNLHoliday").checked=s.nlHoliday!==false;$("setBEHoliday").checked=s.beHoliday!==false;if($("setNavApp"))$("setNavApp").value=db.navPrefs?.app||"google";if($("setNavAsk"))$("setNavAsk").checked=db.navPrefs?.ask!==false}
 
 function openMoveDialogForVisit(id){
   const v=db.visits.find(x=>x.id===id);
