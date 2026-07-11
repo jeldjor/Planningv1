@@ -1506,7 +1506,7 @@ button{background:var(--primary)}button:hover{background:var(--primary-dark)}but
 .syncStatus.busy{background:#eef4fb;color:#254b7e;border-color:#d9e6f4}
 
 
-/* v7.4: beheerfuncties uitsluitend binnen de module Beheer */
+/* v7.5: beheerfuncties uitsluitend binnen de module Beheer */
 body .adminTabs:not(#admin .adminTabs),
 body .adminPane:not(#admin .adminPane),
 body .beheerGrid:not(#admin .beheerGrid),
@@ -1526,6 +1526,12 @@ body #btnBackup:not(#admin #btnBackup),
 body #btnRestore:not(#admin #btnRestore){
   display:none!important;
 }
+
+
+/* v7.5: Beheer is een echte aparte module */
+#admin.screen{display:none!important}
+#admin.screen.active{display:block!important}
+body:not(.gj-admin) #admin{display:none!important}
 
 </style>
 </head>
