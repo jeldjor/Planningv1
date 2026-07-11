@@ -1576,8 +1576,20 @@ button{background:#123b73!important}button:hover{background:#0b274d!important}bu
 .uiIcon{width:1.15em;height:1.15em;display:inline-block;vertical-align:-.18em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 </style>
 <style id="v86LaptopLogoFix">
-img[src="logo-menu.png"]{background:transparent!important}
-</style></head>
+img[src="logo-menu.png?v=9000"]{background:transparent!important}
+</style>
+<style id="v90LogoNoClippingLaptop">
+img[src="logo-login.png?v=9000"],
+img[src="logo-menu.png?v=9000"],
+img[src="logo-dark-menu.png?v=9000"]{
+  height:auto!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  overflow:visible!important;
+}
+</style>
+
+</head>
 <body>
 <aside class="sidebar">
   <div class="userBrand">
@@ -1610,7 +1622,7 @@ img[src="logo-menu.png"]{background:transparent!important}
     <div class="sidebarLang" aria-label="Taalkeuze">
       <button type="button" data-lang="nl" class="active">NL</button><span>|</span><button type="button" data-lang="de">DE</button><span>|</span><button type="button" data-lang="en">EN</button>
     </div>
-    <div class="productVersion">v8.9</div>
+    <div class="productVersion">v9.0</div>
   </div>
 </aside>
 <div id="profileCropOverlay" class="profileCropOverlay" aria-hidden="true"><div class="profileCropDialog"><h2>Profielfoto aanpassen</h2><div id="cropViewport" class="cropViewport"><img id="cropImage" alt="Uitsnede"></div><input id="cropZoom" class="cropZoom" type="range" min="1" max="3" step="0.01" value="1"><div class="cropActions"><button id="cropCancel" type="button" class="cancel">Annuleren</button><button id="cropSave" type="button">Opslaan</button></div></div></div>
