@@ -4396,11 +4396,11 @@ function setupProfileCropper(fileInput,button,imageEl){
   const pointerEnd=e=>{pointers.delete(e.pointerId);if(pointers.size===1){const p=[...pointers.values()][0];startX=p.x;startY=p.y;startImageX=x;startImageY=y;}else if(pointers.size===0){startDistance=0;} };
   viewport.addEventListener('pointerup',pointerEnd);viewport.addEventListener('pointercancel',pointerEnd);
   document.getElementById('cropCancel').addEventListener('click',()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');cropImg.removeAttribute('src');});
-  document.getElementById('cropSave').addEventListener('click',()=>{const out=512,view=viewSize(),canvas=document.createElement('canvas');canvas.width=out;canvas.height=out;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out,out);ctx.drawImage(cropImg,(x/view)*out,(y/view)*out,(naturalW*base*scale/view)*out,(naturalH*base*scale/view)*out);const data=canvas.toDataURL('image/jpeg',.9);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}));});
+  document.getElementById('cropSave').addEventListener('click',()=>{const out=512,view=viewSize(),canvas=document.createElement('canvas');canvas.width=out;canvas.height=out;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out,out);ctx.drawImage(cropImg,(x/view)*out,(y/view)*out,(naturalW*base*scale/view)*out,(naturalH*base*scale/view)*out);const data=canvas.toDataURL('image/jpeg',.9);localStorage.setItem('gj_profile_photo',data);imageEl.src=data;button.classList.add('hasPhoto');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');window.dispatchEvent(new CustomEvent('gj-profile-photo-changed',{detail:data}));});
 }
 
   const profileButton=$('desktopProfileButton'), profileFile=$('desktopProfileFile'), profileImage=$('desktopProfileImage');
-  const loadDesktopProfile=()=>{const uid=window.GJ_AUTH?.profile?.id;const saved=uid?localStorage.getItem('gj_profile_photo_'+uid):null;if(saved&&profileImage){profileImage.src=saved;profileButton?.classList.add('hasPhoto')}};
+  const loadDesktopProfile=()=>{const saved=localStorage.getItem('gj_profile_photo');if(saved&&profileImage){profileImage.src=saved;profileButton?.classList.add('hasPhoto')}};
   loadDesktopProfile();
   /* v10.2: profielfoto uitsluitend via Instellingen → Profiel */
 ["blockStart","blockEnd","fixedDate","reportPlanFrom","reportHistFrom","reportAllFrom"].forEach(id=>{if($(id))$(id).value=iso(new Date())}); if($("reportPlanTo"))$("reportPlanTo").value=iso(addDays(new Date(),365)); if($("reportHistTo"))$("reportHistTo").value=iso(new Date()); if($("reportAllTo"))$("reportAllTo").value=iso(addDays(new Date(),365)); if($("reportMonth"))$("reportMonth").value=iso(new Date()).slice(0,7); if($("blockStart"))$("blockStart").addEventListener("change",syncBlockEndDate);document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>nav(b.dataset.screen));document.querySelectorAll(".view").forEach(b=>b.onclick=()=>{state.view=b.dataset.view;renderCalendar()});$("prev").onclick=()=>{state.cursor.setMonth(state.cursor.getMonth()-1);renderCalendar()};$("next").onclick=()=>{state.cursor.setMonth(state.cursor.getMonth()+1);renderCalendar()};$("btnFixDrop").onclick=()=>toggleMenu("fixMenu");$("btnUnfixDrop").onclick=()=>toggleMenu("unfixMenu");$("btnOptimizeDrop").onclick=()=>toggleMenu("optMenu");$("btnFixDayNew").onclick=fixSelectedDay;$("btnFixWeekNew").onclick=fixSelectedWeek;$("btnUnfixDayNew").onclick=unfixSelectedDay;$("btnUnfixWeekNew").onclick=unfixSelectedWeek;$("btnOptimizeDay").onclick=optimizeSelectedDay;$("btnOptimizeWeek").onclick=optimizeSelectedWeek;$("btnOptimize").onclick=()=>calculateDayRoutes(state.selected,true);$("btnImport").onclick=()=>$("excelFile").click();$("excelFile").onchange=importExcel;$("dbSearch").oninput=renderDb;$("btnAddCustomer").onclick=addCustomer;$("btnSaveDb").onclick=saveDb;$("btnGenerateDb").onclick=openPlanningDialog;$("btnRunPlanning").onclick=generatePlanning;$("planFrom").oninput=updatePlanSummary;$("planTo").oninput=updatePlanSummary;$("overviewSearch").oninput=renderOverview;$("statusFilter").onchange=renderOverview;$("dateFilter").onchange=renderOverview;$("historySearch").oninput=renderHistory;$("historyStatusFilter").onchange=renderHistory;$("historyDateFilter").onchange=renderHistory;$("historySortField").onchange=renderHistory;$("historySortDir").onchange=renderHistory;$("btnHistoryCards").onclick=()=>{state.historyView="cards";renderHistory()};$("btnHistoryList").onclick=()=>{state.historyView="list";renderHistory()};$("unplannedSearch").oninput=renderUnplanned;$("btnSelectAll").onclick=()=>document.querySelectorAll(".upCheck").forEach(x=>x.checked=true);$("btnReplanSelected").onclick=smartReplanSelected;$("btnReplanAll").onclick=smartReplanAll;$("btnAddBlock").onclick=addBlock;if($("blockSearch"))$("blockSearch").oninput=renderOther;if($("blockTypeFilter"))$("blockTypeFilter").onchange=renderOther;if($("blockDateFilter"))$("blockDateFilter").onchange=renderOther;$("btnAddFixed").onclick=addFixed;$("btnSaveSettings").onclick=saveSettings;["setMaxWorkday","setHomeDayEnabled","setHomeDay"].forEach(id=>{if($(id))$(id).onchange=saveSettings});$("btnClearPlanning").onclick=()=>{if(confirmAction("Planning leegmaken","Geplande bezoeken worden verwijderd. Vaste bezoeken blijven staan.")){db.visits=db.visits.filter(v=>v.status==="Vast");db.routeStats={};save();render()}};$("btnClearFixed").onclick=()=>{if(confirmAction("Vaste bezoeken leegmaken","Alle vaste bezoeken worden verwijderd.")){db.visits=db.visits.filter(v=>v.status!=="Vast");db.fixed=[];db.routeStats={};save();render()}};$("btnClearUnplanned").onclick=()=>{if(confirmAction("Niet ingepland leegmaken","Alle niet ingeplande regels worden verwijderd.")){db.unplanned=[];save();render()}};$("btnClearHistory").onclick=()=>{if(confirmAction("Historie leegmaken","Alle historie wordt verwijderd.")){db.history=[];save();render()}};$("btnBackup").onclick=backup;$("btnClearRoutes").onclick=()=>{db.routeCache={};db.routeStats={};save();render();alert("Routecache en dagstatistieken leeggemaakt.")};$("btnRestore").onclick=()=>$("restoreFile").click();$("restoreFile").onchange=e=>restore(e.target.files[0]);$("btnResetAll").onclick=()=>{if(confirmAction("Alles resetten","Alles wordt verwijderd.")){localStorage.removeItem("bp_pro_v2");db=structuredClone(DEFAULT);save();render()}};$("btnApproveProposals").onclick=approveSelectedProposals;$("navWaze").onclick=()=>chooseNav("waze");$("navGoogle").onclick=()=>chooseNav("google");$("navApple").onclick=()=>chooseNav("apple");$("btnSaveMove").onclick=saveMoveDialog;$("btnSaveVisit").onclick=(e)=>{e.preventDefault();saveVisit();};render();initSupabaseClient();});
@@ -5547,30 +5547,45 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 
-<script id="v102ContactThreadsLaptop">
+<script id="v100ContactLaptop">
 (function(){
- const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const fmt=v=>{try{return new Intl.DateTimeFormat('nl-NL',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}catch{return v||''}};
- const lab=s=>({nieuw:'Nieuw',in_behandeling:'In behandeling',beantwoord:'Beantwoord',gesloten:'Gesloten'}[s]||s);
- let channel=null;
- async function fetchThreads(admin=false){
-   let q=GJ_AUTH.sb.from('contact_threads').select('*,contact_messages(*)').order('updated_at',{ascending:false});
-   if(!admin)q=q.eq('user_id',GJ_AUTH.profile.id);
-   const {data,error}=await q;if(error)throw error;
-   return (data||[]).map(t=>({...t,contact_messages:(t.contact_messages||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))}));
- }
- const messagesHtml=t=>(t.contact_messages||[]).map(m=>`<div class="contactText" style="margin-top:8px;padding:10px;border-radius:10px;background:${m.sender_role==='admin'?'#fff4d6':'#f3f6fa'}"><strong>${m.sender_role==='admin'?'Beheerder':'Gebruiker'}</strong><div>${esc(m.message)}</div><small class="contactMeta">${fmt(m.created_at)}</small></div>`).join('');
- async function mine(){
-   if(!GJ_AUTH?.profile)return;const box=document.getElementById('contactMyMessages');if(!box)return;
-   try{const rows=await fetchThreads(false);box.innerHTML=rows.length?rows.map(t=>`<article class="contactCard"><div class="contactHead"><div><strong>${esc(t.subject)}</strong><div class="contactMeta">${fmt(t.created_at)}</div></div><span class="pill">${esc(lab(t.status))}</span></div>${messagesHtml(t)}</article>`).join(''):'<div class="muted">Nog geen contactgesprekken.</div>'}catch(e){box.innerHTML='<div class="syncStatus err">'+esc(e.message)+'</div>'}
- }
- async function inbox(){
-   if(!GJ_AUTH?.isAdmin)return;const box=document.getElementById('adminContactInbox');if(!box)return;
-   try{const rows=await fetchThreads(true),open=rows.filter(x=>x.status!=='gesloten').length;const b=document.getElementById('adminContactBadge');if(b)b.innerHTML=open?`<span class="contactBadge">${open}</span>`:'';box.innerHTML=rows.length?rows.map(t=>`<article class="contactCard" data-thread-id="${esc(t.id)}"><div class="contactHead"><div><strong>${esc(t.subject)}</strong><div class="contactMeta">${esc(t.sender_name||t.sender_email||'Gebruiker')} · ${fmt(t.created_at)}</div></div><span class="pill">${esc(lab(t.status))}</span></div>${messagesHtml(t)}<div class="contactActions"><label>Status<select class="contactAdminState"><option value="nieuw" ${t.status==='nieuw'?'selected':''}>Nieuw</option><option value="in_behandeling" ${t.status==='in_behandeling'?'selected':''}>In behandeling</option><option value="beantwoord" ${t.status==='beantwoord'?'selected':''}>Beantwoord</option><option value="gesloten" ${t.status==='gesloten'?'selected':''}>Gesloten</option></select></label><label>Antwoord<textarea class="contactAdminReply" placeholder="Typ antwoord..."></textarea></label><button type="button" class="contactAdminSave">Opslaan en versturen</button></div></article>`).join(''):'<div class="muted">De contact-inbox is leeg.</div>'}catch(e){box.innerHTML='<div class="syncStatus err">'+esc(e.message)+'</div>'}
- }
- async function send(){const st=document.getElementById('contactStatus'),msg=document.getElementById('contactMessage').value.trim();if(msg.length<3){st.textContent='Vul een duidelijke vraag in.';st.className='syncStatus err';return}st.textContent='Wordt verstuurd…';st.className='syncStatus busy';const {error}=await GJ_AUTH.sb.rpc('create_contact_thread',{p_subject:document.getElementById('contactSubject').value,p_message:msg});if(error){st.textContent=error.message;st.className='syncStatus err';return}document.getElementById('contactMessage').value='';st.textContent='Je bericht is verstuurd.';st.className='syncStatus ok';await mine()}
- document.addEventListener('click',async e=>{if(e.target.id==='contactSend')return send();if(e.target.id==='contactRefresh')return mine();if(e.target.id==='adminContactRefresh')return inbox();const b=e.target.closest('.contactAdminSave');if(!b)return;const c=b.closest('[data-thread-id]'),reply=c.querySelector('.contactAdminReply').value.trim(),status=c.querySelector('.contactAdminState').value;if(!reply&&status==='beantwoord')return alert('Typ eerst een antwoord.');b.disabled=true;try{if(reply){const r=await GJ_AUTH.sb.from('contact_messages').insert({thread_id:c.dataset.threadId,sender_id:GJ_AUTH.profile.id,sender_role:'admin',message:reply});if(r.error)throw r.error}const u=await GJ_AUTH.sb.from('contact_threads').update({status,updated_at:new Date().toISOString(),closed_at:status==='gesloten'?new Date().toISOString():null}).eq('id',c.dataset.threadId);if(u.error)throw u.error;await inbox();await mine()}catch(err){alert(err.message)}finally{b.disabled=false}});
- window.addEventListener('gj-auth-ready',async()=>{await mine();if(GJ_AUTH.isAdmin)await inbox();if(channel)GJ_AUTH.sb.removeChannel(channel);channel=GJ_AUTH.sb.channel('contact-threads-v102').on('postgres_changes',{event:'*',schema:'public',table:'contact_threads'},()=>{mine();if(GJ_AUTH.isAdmin)inbox()}).on('postgres_changes',{event:'*',schema:'public',table:'contact_messages'},()=>{mine();if(GJ_AUTH.isAdmin)inbox()}).subscribe()});
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=v=>{try{return new Intl.DateTimeFormat('nl-NL',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}catch{return v||''}};
+  const label=s=>({nieuw:'Nieuw',in_behandeling:'In behandeling',beantwoord:'Beantwoord',gesloten:'Gesloten'}[s]||s);
+  let channel=null;
+  async function loadMine(){
+    if(!GJ_AUTH?.sb||!GJ_AUTH?.profile)return;
+    const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').eq('user_id',GJ_AUTH.profile.id).order('created_at',{ascending:false});
+    const box=document.getElementById('contactMyMessages'); if(!box)return;
+    if(error){box.innerHTML='<div class="syncStatus err">'+esc(error.message)+'</div>';return}
+    box.innerHTML=(data||[]).length?(data||[]).map(m=>`<article class="contactCard"><div class="contactHead"><div><strong>${esc(m.subject)}</strong><div class="contactMeta">${fmt(m.created_at)}</div></div><span class="pill">${esc(label(m.status))}</span></div><div class="contactText">${esc(m.message)}</div>${m.admin_response?`<div class="contactReply"><strong>Antwoord beheerder</strong><div class="contactText">${esc(m.admin_response)}</div></div>`:''}</article>`).join(''):'<div class="muted">Je hebt nog geen berichten verstuurd.</div>';
+  }
+  async function loadInbox(){
+    if(!GJ_AUTH?.isAdmin)return;
+    const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').order('created_at',{ascending:false});
+    const box=document.getElementById('adminContactInbox'); if(!box)return;
+    if(error){box.innerHTML='<div class="syncStatus err">'+esc(error.message)+'</div>';return}
+    const rows=data||[], open=rows.filter(x=>!['beantwoord','gesloten'].includes(x.status)).length;
+    const badge=document.getElementById('adminContactBadge'); if(badge)badge.innerHTML=open?`<span class="contactBadge">${open}</span>`:'';
+    box.innerHTML=rows.length?rows.map(m=>`<article class="contactCard" data-contact-id="${esc(m.id)}"><div class="contactHead"><div><strong>${esc(m.subject)}</strong><div class="contactMeta">${esc(m.sender_name||m.sender_email||'Gebruiker')} · ${esc(m.sender_email||'')} · ${fmt(m.created_at)}</div></div><span class="pill">${esc(label(m.status))}</span></div><div class="contactText">${esc(m.message)}</div><div class="contactActions"><label>Status<select class="contactAdminState"><option value="nieuw" ${m.status==='nieuw'?'selected':''}>Nieuw</option><option value="in_behandeling" ${m.status==='in_behandeling'?'selected':''}>In behandeling</option><option value="beantwoord" ${m.status==='beantwoord'?'selected':''}>Beantwoord</option><option value="gesloten" ${m.status==='gesloten'?'selected':''}>Gesloten</option></select></label><label>Antwoord<textarea class="contactAdminReply" placeholder="Typ antwoord aan gebruiker...">${esc(m.admin_response||'')}</textarea></label><button type="button" class="contactAdminSave">Opslaan</button></div></article>`).join(''):'<div class="muted">De contact-inbox is leeg.</div>';
+  }
+  async function send(){
+    const status=document.getElementById('contactStatus'), message=document.getElementById('contactMessage').value.trim();
+    if(message.length<3){status.textContent='Vul een duidelijke vraag in.';status.className='syncStatus err';return}
+    status.textContent='Wordt verstuurd…';status.className='syncStatus busy';
+    const p=GJ_AUTH.profile||{};
+    const row={user_id:p.id,sender_name:p.full_name||[p.first_name,p.last_name].filter(Boolean).join(' ')||p.email,sender_email:p.email,subject:document.getElementById('contactSubject').value,message};
+    const {error}=await GJ_AUTH.sb.from('contact_messages').insert(row);
+    if(error){status.textContent=error.message;status.className='syncStatus err';return}
+    document.getElementById('contactMessage').value='';status.textContent='Je vraag is verstuurd.';status.className='syncStatus ok';await loadMine();
+  }
+  document.addEventListener('click',async e=>{
+    if(e.target.id==='contactSend')return send();
+    if(e.target.id==='contactRefresh')return loadMine();
+    if(e.target.id==='adminContactRefresh')return loadInbox();
+    const save=e.target.closest('.contactAdminSave'); if(save){const card=save.closest('[data-contact-id]'),state=card.querySelector('.contactAdminState').value,reply=card.querySelector('.contactAdminReply').value.trim();save.disabled=true;const patch={status:state,admin_response:reply||null,answered_at:reply?new Date().toISOString():null,answered_by:reply?GJ_AUTH.profile.id:null};const {error}=await GJ_AUTH.sb.from('contact_messages').update(patch).eq('id',card.dataset.contactId);save.disabled=false;if(error)alert(error.message);else await loadInbox();}
+  });
+  window.addEventListener('gj-auth-ready',async()=>{await loadMine();if(GJ_AUTH.isAdmin)await loadInbox();if(channel)GJ_AUTH.sb.removeChannel(channel);channel=GJ_AUTH.sb.channel('contact-v10').on('postgres_changes',{event:'*',schema:'public',table:'contact_messages'},()=>{loadMine();if(GJ_AUTH.isAdmin)loadInbox()}).subscribe();});
 })();
 </script>
 
@@ -5583,7 +5598,7 @@ async function drawVisitPdfLayout(doc,visit){
     if(!url)return;
     const pairs=[['desktopProfileImage','desktopProfileButton'],['profileImage','profileButton']];
     for(const [imgId,btnId] of pairs){const img=document.getElementById(imgId),btn=document.getElementById(btnId);if(img&&btn){img.src=url;btn.classList.add('hasPhoto')}}
-    try{const uid=window.GJ_AUTH?.profile?.id;if(uid)localStorage.setItem('gj_profile_photo_'+uid,url)}catch(_){ }
+    try{localStorage.setItem('gj_profile_photo',url)}catch(_){ }
   };
   async function refreshProfile(){
     const a=window.GJ_AUTH;if(!a?.sb||!a?.profile?.id)return;
@@ -5607,7 +5622,6 @@ async function drawVisitPdfLayout(doc,visit){
   window.addEventListener('gj-auth-ready',refreshProfile);
   window.addEventListener('gj-profile-photo-changed',e=>uploadProfilePhoto(e.detail));
   window.addEventListener('focus',refreshProfile);
-  window.addEventListener('gj-auth-ready',()=>{const a=window.GJ_AUTH;if(!a?.profile?.id)return;a.sb.channel('profile-photo-'+a.profile.id).on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles',filter:'id=eq.'+a.profile.id},payload=>{if(payload.new?.avatar_url){a.profile=payload.new;applyPhoto(payload.new.avatar_url)}}).subscribe()});
 })();
 </script>
 
