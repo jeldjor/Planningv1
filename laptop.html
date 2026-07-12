@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Planning-GJsystems v10.3</title>
+<title>Planning-GJsystems v10.6</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -1605,7 +1605,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
 .v102SettingsGrid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:14px;margin-top:14px}.v102Card{border:1px solid var(--line,#d8dee8);border-radius:14px;background:#fff;padding:14px;display:grid;gap:10px}.v102Card h3{margin:0;color:#123b73}.v102ProfilePreview{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#eef2f6;border:4px solid var(--logoOrange)}.v102Criteria{font-size:12px;color:#667085;line-height:1.5}.v102Criteria .ok{color:#067647}.v102Criteria .bad{color:#b42318}.v102Impersonation{position:fixed;z-index:99990;left:246px;right:0;top:0;background:var(--logoOrange);color:#fff;padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;box-shadow:0 4px 16px #0003}.v102Impersonation button{background:#fff!important;color:#9a4d00!important;border-color:#fff!important;padding:6px 10px!important}.v102Impersonating .main{padding-top:58px!important}.v102SupportFilters{display:grid;grid-template-columns:1fr 180px 180px;gap:8px;margin:10px 0}.v102Chat{display:grid;gap:8px;max-height:360px;overflow:auto;padding:8px;background:#f8fafc;border-radius:10px}.v102Bubble{max-width:82%;padding:9px 11px;border-radius:12px;white-space:pre-wrap}.v102Bubble.user{background:#eaf0f8;justify-self:start}.v102Bubble.admin{background:#123b73;color:#fff;justify-self:end}.v102Unread{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#ef7d00;color:#fff;font-size:11px}@media(max-width:1050px){.v102Impersonation{left:0;bottom:66px;top:auto}.v102Impersonating .main{padding-top:0!important;padding-bottom:120px!important}}@media(max-width:760px){.v102SettingsGrid,.v102SupportFilters{grid-template-columns:1fr}.v102Impersonation{font-size:12px;padding:7px}.v102Card{padding:12px}}
 </style>
 <link rel="stylesheet" href="v105.css?v=10500">
-<link rel="stylesheet" href="v103.css?v=10300">
+<link rel="stylesheet" href="v106.css?v=10600">
 </head>
 <body>
 <aside class="sidebar">
@@ -1660,7 +1660,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
       });
     })();
     </script>
-    <div class="productVersion">v9.0</div>
+    <div class="productVersion">v10.6</div>
   </div>
 </aside>
 <div id="profileCropOverlay" class="profileCropOverlay" aria-hidden="true"><div class="profileCropDialog"><h2>Profielfoto aanpassen</h2><div id="cropViewport" class="cropViewport"><img id="cropImage" alt="Uitsnede"></div><input id="cropZoom" class="cropZoom" type="range" min="1" max="3" step="0.01" value="1"><div class="cropActions"><button id="cropCancel" type="button" class="cancel">Annuleren</button><button id="cropSave" type="button">Opslaan</button></div></div></div>
@@ -2042,6 +2042,7 @@ function initSupabaseClient(){
     return null;
   }
 }
+window.addEventListener('gj-auth-ready',()=>{if(window.GJ_AUTH?.sb){supa=window.GJ_AUTH.sb;supaReady=true}});
 function setSyncStatus(msg,type){
   const el=document.getElementById("syncStatus");
   if(!el)return;
@@ -4978,6 +4979,7 @@ async function drawVisitPdfLayout(doc,visit){
   const GJ_KEY = "sb_publishable_dUtfbI9RAAwDCUBKJjjMCQ_kqIeg-ew";
   function isUuid(x){return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(x||''));}
   function client(){
+    if(window.GJ_AUTH?.sb)return window.GJ_AUTH.sb;
     if(window.gjHardSupa) return window.gjHardSupa;
     if(window.supabase && window.supabase.createClient){
       window.gjHardSupa = window.supabase.createClient(GJ_URL, GJ_KEY);
@@ -5306,7 +5308,7 @@ async function drawVisitPdfLayout(doc,visit){
   let busy=false;
 
   function client(){
-    if(window.GJ_AUTH?.sb) return window.GJ_AUTH.sb;
+    if(window.GJ_AUTH?.sb)return window.GJ_AUTH.sb;
     if(window.gjAdminSupa) return window.gjAdminSupa;
     if(!window.supabase || !window.supabase.createClient) throw new Error('Supabase is nog niet geladen. Vernieuw de pagina.');
     window.gjAdminSupa=window.supabase.createClient(URL,KEY);
@@ -5356,7 +5358,7 @@ async function drawVisitPdfLayout(doc,visit){
     else if(action==='history') db.history=[];
     else if(action==='routes'){db.routeCache={};db.routeStats={};}
     else if(action==='database' || action==='all'){
-      try{localStorage.removeItem('bp_pro_v2_'+(sessionStorage.getItem('gj_workspace_storage_id')||'guest'))}catch(e){}
+      try{localStorage.removeItem('bp_pro_v2')}catch(e){}
       if(typeof DEFAULT!=='undefined') db=structuredClone(DEFAULT);
       else {db.customers=[];db.visits=[];db.fixed=[];db.unplanned=[];db.history=[];db.routeCache={};db.routeStats={};}
     }
@@ -5364,19 +5366,17 @@ async function drawVisitPdfLayout(doc,visit){
   }
   async function directFallback(action){
     const c=client();
-    const workspaceId=window.GJ_AUTH?.workspaceUserId||window.GJ_AUTH?.profile?.id;
-    const own=(table,q)=>workspaceId&&['planning','customers','app_day_settings','app_absences'].includes(table)?q.eq('user_id',workspaceId):q;
-    const all=(table,q)=>own(table,q.not('id','is',null));
+    const all=q=>q.not('id','is',null);
     if(action==='planning'){
-      const r=await all('planning',c.from('planning').delete()); if(r.error) throw r.error;
+      const r=await all(c.from('planning').delete()); if(r.error) throw r.error;
     }else if(action==='fixed'){
-      const r=await own('planning',c.from('planning').delete().eq('vast',true)); if(r.error) throw r.error;
+      const r=await c.from('planning').delete().eq('vast',true); if(r.error) throw r.error;
     }else if(action==='history'){
-      let r=await all('visit_photos',c.from('visit_photos').delete()); if(r.error) throw r.error;
-      r=await all('visit_history',c.from('visit_history').delete()); if(r.error) throw r.error;
+      let r=await all(c.from('visit_photos').delete()); if(r.error) throw r.error;
+      r=await all(c.from('visit_history').delete()); if(r.error) throw r.error;
     }else if(action==='database'||action==='all'){
       for(const table of ['visit_photos','visit_history','planning','customers']){
-        const r=await all(table,c.from(table).delete()); if(r.error) throw new Error(table+': '+r.error.message);
+        const r=await all(c.from(table).delete()); if(r.error) throw new Error(table+': '+r.error.message);
       }
     }
     return {fallback:true};
@@ -5435,8 +5435,9 @@ async function drawVisitPdfLayout(doc,visit){
 (function(){
   const URL='https://fcnsglahkjvhyfkghnpy.supabase.co';
   const KEY='sb_publishable_dUtfbI9RAAwDCUBKJjjMCQ_kqIeg-ew';
-  const c=window.supabase?.createClient(URL,KEY);
+  let c=window.supabase?.createClient(URL,KEY);
   if(!c) return;
+  window.addEventListener('gj-auth-ready',()=>{if(window.GJ_AUTH?.sb)c=window.GJ_AUTH.sb});
   let busy=false;
   const ct=v=>v?String(v).slice(0,5):'';
   async function pullShared(){
@@ -5488,7 +5489,7 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 
-<script src="auth.js?v=10500"></script>
+<script src="auth.js?v=10600"></script>
 <script>
 (function(){
   function $(id){return document.getElementById(id)}
@@ -5507,12 +5508,12 @@ async function drawVisitPdfLayout(doc,visit){
       setUserStatus('Gebruikers laden…','busy');
       const r=await adminCall({action:'list'});
       const rows=r.users||[];
-      $('adminUsersTable').innerHTML=`<thead><tr><th>Naam</th><th>E-mail</th><th>Rol</th><th>Status</th><th>Acties</th></tr></thead><tbody>${rows.map(u=>`<tr class="adminUser" data-id="${esc(u.id)}"><td><strong>${esc([u.first_name,u.last_name].filter(Boolean).join(' ')||'-')}</strong></td><td>${esc(u.email)}</td><td>${u.role==='admin'?'Beheerder':'Gebruiker'}</td><td>${u.is_active===false?'Uitgeschakeld':'Actief'}</td><td class="adminUserActions"><button class="secondary adminToggleUser" data-id="${esc(u.id)}" data-active="${u.is_active!==false}">${u.is_active===false?'Inschakelen':'Uitschakelen'}</button><button class="secondary adminPasswordUser" data-id="${esc(u.id)}">Wachtwoord</button></td></tr>`).join('')}</tbody>`;
+      $('adminUsersTable').innerHTML=`<thead><tr><th>Naam</th><th>E-mail</th><th>Rol</th><th>Status</th><th>Acties</th></tr></thead><tbody>${rows.map(u=>`<tr><td>${esc([u.first_name,u.last_name].filter(Boolean).join(' ')||'-')}</td><td>${esc(u.email)}</td><td>${u.role==='admin'?'Beheerder':'Gebruiker'}</td><td>${u.is_active===false?'Uitgeschakeld':'Actief'}</td><td><button class="secondary adminToggleUser" data-id="${esc(u.id)}" data-active="${u.is_active!==false}">${u.is_active===false?'Inschakelen':'Uitschakelen'}</button> <button class="secondary adminPasswordUser" data-id="${esc(u.id)}">Wachtwoord</button></td></tr>`).join('')}</tbody>`;
       setUserStatus(`${rows.length} gebruikers geladen`,'ok');
     }catch(e){setUserStatus(e.message,'err')}
   }
   async function initAdmin(profile){
-    const isAdmin=profile?.role==='admin';
+    const isAdmin=window.GJ_AUTH?.isAdmin===true;
     document.body.classList.toggle('gj-admin',isAdmin);
     document.querySelectorAll('.gjAdminOnly').forEach(e=>e.style.display=isAdmin?'':'none');
     if(!isAdmin && state?.screen==='admin') nav('calendar');
@@ -5567,7 +5568,7 @@ async function drawVisitPdfLayout(doc,visit){
  const messagesHtml=t=>(t.contact_messages||[]).map(m=>`<div class="contactText" style="margin-top:8px;padding:10px;border-radius:10px;background:${m.sender_role==='admin'?'#fff4d6':'#f3f6fa'}"><strong>${m.sender_role==='admin'?'Beheerder':'Gebruiker'}</strong><div>${esc(m.message)}</div><small class="contactMeta">${fmt(m.created_at)}</small></div>`).join('');
  async function mine(){
    if(!GJ_AUTH?.profile)return;const box=document.getElementById('contactMyMessages');if(!box)return;
-   try{const rows=await fetchThreads(false);box.innerHTML=rows.length?rows.map(t=>`<article class="contactCard"><div class="contactHead"><div><strong>${esc(t.subject)}</strong><div class="contactMeta">${fmt(t.created_at)}</div></div><span class="pill">${esc(lab(t.status))}</span></div>${messagesHtml(t)}</article>`).join(''):'<div class="muted">Nog geen contactgesprekken.</div>'}catch(e){box.innerHTML='<div class="syncStatus err">'+esc(e.message)+'</div>'}
+   try{const rows=await fetchThreads(false);box.innerHTML=rows.length?rows.map(t=>`<article class="contactCard" data-thread-id="${esc(t.id)}"><div class="contactHead"><div><strong>${esc(t.subject)}</strong><div class="contactMeta">${fmt(t.created_at)}</div></div><span class="pill">${esc(lab(t.status))}</span></div>${messagesHtml(t)}</article>`).join(''):'<div class="muted">Nog geen contactgesprekken.</div>'}catch(e){box.innerHTML='<div class="syncStatus err">'+esc(e.message)+'</div>'}
  }
  async function inbox(){
    if(!GJ_AUTH?.isAdmin)return;const box=document.getElementById('adminContactInbox');if(!box)return;
@@ -5632,6 +5633,6 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 <script src="v105.js?v=10500"></script>
-<script src="v103.js?v=10300"></script>
+<script src="v106.js?v=10600"></script>
 </body>
 </html>
