@@ -5427,6 +5427,10 @@ async function drawVisitPdfLayout(doc,visit){
 <script>
 // v6.0: één centrale planning voor laptop en iPhone
 (function(){
+  // Uitgeschakeld in v10.7: deze verouderde tweede synchronisatie gebruikte
+  // Supabase-UUID's als lokale klant-ID en overschreef daardoor correcte
+  // klantnamen, tijden en routes. De centrale v10.7-sync is als enige leidend.
+  return;
   const URL='https://fcnsglahkjvhyfkghnpy.supabase.co';
   const KEY='sb_publishable_dUtfbI9RAAwDCUBKJjjMCQ_kqIeg-ew';
   let c=window.supabase?.createClient(URL,KEY);
