@@ -4802,12 +4802,18 @@ async function drawVisitPdfLayout(doc,visit){
         order:r.route_volgorde||999,
         supabase:true
       }));
-      if(loaded.length){
-        const key=new Set(loaded.map(v=>v.date+'|'+v.customerId));
-        db.visits=(db.visits||[]).filter(v=>!key.has(v.date+'|'+v.customerId)).concat(loaded);
-        save(); render();
-        setSyncStatus(`Supabase: ${loaded.length} planningregels geladen`, 'ok');
+      const previous=db.visits||[];
+      if(from||to){
+        db.visits=previous.filter(v=>(from&&v.date<from)||(to&&v.date>to)).concat(loaded);
+      }else{
+        const previousKeys=new Set(previous.filter(v=>!v.pause).map(v=>String(v.id||'')+'|'+v.date+'|'+v.customerId));
+        const loadedKeys=new Set(loaded.map(v=>String(v.id||'')+'|'+v.date+'|'+v.customerId));
+        const hadStale=previousKeys.size!==loadedKeys.size||[...previousKeys].some(k=>!loadedKeys.has(k));
+        db.visits=loaded;
+        if(hadStale){db.routeCache={};db.routeStats={};}
       }
+      save(); render();
+      setSyncStatus(`Supabase: ${loaded.length} planningregels geladen`, 'ok');
       return true;
     }catch(e){console.error(e);setSyncStatus('Planning laden fout: '+e.message,'err');return false;}
   };
@@ -5489,7 +5495,7 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 
-<script src="auth.js?v=10600"></script>
+<script src="auth.js?v=10601"></script>
 <script>
 (function(){
   function $(id){return document.getElementById(id)}
@@ -5633,6 +5639,6 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 <script src="v105.js?v=10500"></script>
-<script src="v106.js?v=10600"></script>
+<script src="v106.js?v=10601"></script>
 </body>
 </html>
