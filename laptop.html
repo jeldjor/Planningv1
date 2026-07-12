@@ -1589,6 +1589,10 @@ img[src="logo-dark-menu.png?v=9100"]{
 }
 </style>
 
+
+<style id="v100ContactStyles">
+.contactList{display:grid;gap:10px;margin-top:10px}.contactCard{border:1px solid var(--line,#d8dee8);border-radius:14px;background:#fff;padding:12px;display:grid;gap:8px}.contactHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.contactMeta{font-size:12px;color:#667085}.contactText{white-space:pre-wrap;line-height:1.45}.contactReply{background:#f2f7ff;border-left:4px solid #123b73;border-radius:8px;padding:10px}.contactActions{display:grid;grid-template-columns:160px 1fr auto;gap:8px;align-items:end}.contactActions textarea{min-height:74px}.contactBadge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;align-items:center;justify-content:center;border-radius:999px;background:#b42318;color:#fff;font-size:11px;font-weight:900}@media(max-width:900px){.contactActions{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <aside class="sidebar">
@@ -1612,6 +1616,7 @@ img[src="logo-dark-menu.png?v=9100"]{
     <button class="nav" data-screen="availability">Afwezigheid / overig</button>
     <button class="nav" data-screen="fixed">Vaste afspraken</button>
     <button class="nav" data-screen="settings">Instellingen</button>
+    <button class="nav" data-screen="contact">Contact</button>
     <button class="nav gjAdminOnly" data-screen="admin">Beheer</button>
   </div>
   <div class="bottomDivider"><span></span></div>
@@ -1737,6 +1742,20 @@ img[src="logo-dark-menu.png?v=9100"]{
 <section id="availability" class="screen"><div class="verticalStack"><section class="panel"><h2>Afwezigheid / overig toevoegen</h2><div class="formGrid"><label>Type<select id="blockType"><option>Verlof</option><option>Ziekte</option><option>Training</option><option>Overig</option></select></label><label>Startdatum<input id="blockStart" type="date" onchange="syncBlockEndDate()"></label><label>Einddatum<input id="blockEnd" type="date"></label><label>Starttijd<input id="blockStartTime" type="time"></label><label>Eindtijd<input id="blockEndTime" type="time"></label><label class="wide">Omschrijving<input id="blockNote" placeholder="Bijv. verlof ochtend, tandarts..."></label></div><button id="btnAddBlock">Toevoegen</button></section><section class="panel"><h2>Afwezigheid / overig</h2><div class="tableWrap"><table id="blocksTable"></table></div></section></div></section>
 <section id="fixed" class="screen"><div class="verticalStack"><section class="panel"><h2>Vaste afspraak</h2><div class="formGrid"><label class="wide">Klant<input id="fixedCustomer" list="customerList" placeholder="ID of winkelnaam"></label><datalist id="customerList"></datalist><label>Datum<input id="fixedDate" type="date"></label><label>Tijd<input id="fixedTime" type="time"></label><label>Duur min<input id="fixedDuration" type="number" value="60"></label><label class="wide">Opmerking<input id="fixedNote"></label></div><button id="btnAddFixed">Toevoegen</button></section><section class="panel"><h2>Vaste afspraken</h2><div class="tableWrap"><table id="fixedTable"></table></div></section></div></section>
 
+
+<section id="contact" class="screen">
+  <div class="panel">
+    <div class="sectionHead"><div><h2>Contact</h2><p class="muted">Stuur een vraag naar de beheerder. Je ziet hier ook de status en het antwoord.</p></div><button type="button" id="contactRefresh" class="secondary">Vernieuwen</button></div>
+    <div class="formGrid settings">
+      <label>Onderwerp<select id="contactSubject"><option>Planning</option><option>Database / klanten</option><option>Account / inloggen</option><option>Route / TomTom</option><option>iPhone / mobiel</option><option>Overig</option></select></label>
+      <label style="grid-column:1/-1">Vraag<textarea id="contactMessage" rows="6" maxlength="5000" placeholder="Beschrijf je vraag zo duidelijk mogelijk..."></textarea></label>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" id="contactSend">Vraag versturen</button><span id="contactStatus" class="syncStatus">Nog niets verstuurd.</span></div>
+    <h3 style="margin-top:22px">Mijn berichten</h3>
+    <div id="contactMyMessages" class="contactList"><div class="muted">Berichten worden geladen…</div></div>
+  </div>
+</section>
+
 <section id="admin" class="screen gjAdminOnly">
   <div class="panel">
     <div class="sectionHead"><div><h2>Beheer</h2><p class="muted">Alle beheerdersfuncties staan uitsluitend op deze pagina.</p></div></div>
@@ -1744,6 +1763,7 @@ img[src="logo-dark-menu.png?v=9100"]{
       <button type="button" class="secondary adminTab active" data-admin-tab="users">Gebruikers</button>
       <button type="button" class="secondary adminTab" data-admin-tab="tomtom">TomTom</button>
       <button type="button" class="secondary adminTab" data-admin-tab="system">Systeembeheer</button>
+      <button type="button" class="secondary adminTab" data-admin-tab="contact">Contact-inbox <span id="adminContactBadge"></span></button>
     </div>
 
     <div class="adminPane" id="adminPaneUsers">
@@ -1753,7 +1773,7 @@ img[src="logo-dark-menu.png?v=9100"]{
         <label>Achternaam<input id="adminLastName" autocomplete="off"></label>
         <label>E-mailadres<input id="adminEmail" type="email" autocomplete="off"></label>
         <label>Tijdelijk wachtwoord<input id="adminPassword" type="password" autocomplete="new-password"></label>
-        <label>Rol<select id="adminRole"><option value="user">Gebruiker</option><option value="admin">Beheerder</option></select></label>
+        <label>Rol<input value="Gebruiker" disabled><small>Planning-GJsystems v10.0 gebruikt één beheerder.</small></label>
         <div style="align-self:end"><button type="button" id="btnAdminCreateUser">Gebruiker aanmaken</button></div>
       </div>
       <div id="adminUserStatus" class="syncStatus">Gebruikers nog niet geladen</div>
@@ -1768,6 +1788,12 @@ img[src="logo-dark-menu.png?v=9100"]{
         <div class="wide"><button type="button" id="saveTomTomSecure">Sleutel beveiligd opslaan en inschakelen</button> <button type="button" id="disableTomTomSecure" class="secondary">TomTom uitschakelen</button></div>
       </div>
       <div id="tomtomSecureStatus" class="syncStatus">Status wordt geladen…</div>
+    </div>
+
+
+    <div class="adminPane" id="adminPaneContact" hidden>
+      <div class="sectionHead"><div><h3>Contact-inbox</h3><p class="muted">Vragen van gebruikers op laptop en iPhone.</p></div><button type="button" id="adminContactRefresh" class="secondary">Vernieuwen</button></div>
+      <div id="adminContactInbox" class="contactList"><div class="muted">Inbox wordt geladen…</div></div>
     </div>
 
     <div class="adminPane" id="adminPaneSystem" hidden>
@@ -4320,7 +4346,7 @@ function exportMonthPlanningReport(){
 }
 
 function confirmAction(t,msg){if(!confirm(`${t}\n\n${msg}`))return false;return prompt("Typ BEVESTIG om door te gaan:")==="BEVESTIG"} function backup(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"}));a.download=`planning-gjsystems-backup-${new Date().toISOString().slice(0,10)}.json`;a.click()} function restore(file){if(!file)return;const r=new FileReader();r.onload=e=>{try{if(!confirmAction("Back-up terugzetten","Huidige gegevens worden vervangen."))return;db=JSON.parse(e.target.result);save();render()}catch{alert("Ongeldige back-up")}};r.readAsText(file)}
-function nav(s){state.screen=s;document.querySelectorAll(".screen,.nav").forEach(x=>x.classList.remove("active"));$(s).classList.add("active");document.querySelector(`.nav[data-screen="${s}"]`)?.classList.add("active");const m={calendar:["Kalender","Maand, week of dag met route rechts."],today:["Vandaag","Dagroute van vandaag."],unplanned:["Niet ingepland","Uitgevallen of verwijderde bezoeken."],overview:["Overzicht","Alle bezoeken en statussen."],history:["Historie","Alle afgeronde bezoeken."],reports:["Rapportages","Excel-overzichten uitdraaien."],database:["Database","Klanten beheren."],availability:["Afwezigheid / overig","Verlof, ziekte of tijdelijke afwezigheid."],fixed:["Vaste afspraken","Harde afspraken beheren."],settings:["Instellingen","Persoonlijke en planningsinstellingen."],admin:["Beheer","Gebruikers, TomTom en systeembeheer."]};$("title").textContent=m[s][0];$("sub").textContent=m[s][1];render()} function render(){if(state.screen==="calendar")renderCalendar();renderToday();renderUnplanned();renderOverview();renderHistory();renderDb();renderOther();fillSettings()}
+function nav(s){state.screen=s;document.querySelectorAll(".screen,.nav").forEach(x=>x.classList.remove("active"));$(s).classList.add("active");document.querySelector(`.nav[data-screen="${s}"]`)?.classList.add("active");const m={calendar:["Kalender","Maand, week of dag met route rechts."],today:["Vandaag","Dagroute van vandaag."],unplanned:["Niet ingepland","Uitgevallen of verwijderde bezoeken."],overview:["Overzicht","Alle bezoeken en statussen."],history:["Historie","Alle afgeronde bezoeken."],reports:["Rapportages","Excel-overzichten uitdraaien."],database:["Database","Klanten beheren."],availability:["Afwezigheid / overig","Verlof, ziekte of tijdelijke afwezigheid."],fixed:["Vaste afspraken","Harde afspraken beheren."],settings:["Instellingen","Persoonlijke en planningsinstellingen."],contact:["Contact","Stuur een vraag en bekijk de reactie."],admin:["Beheer","Gebruikers, TomTom en systeembeheer."]};$("title").textContent=m[s][0];$("sub").textContent=m[s][1];render()} function render(){if(state.screen==="calendar")renderCalendar();renderToday();renderUnplanned();renderOverview();renderHistory();renderDb();renderOther();fillSettings()}
 document.addEventListener("DOMContentLoaded",()=>{
 
 function setupProfileCropper(fileInput,button,imageEl){
@@ -5490,7 +5516,7 @@ async function drawVisitPdfLayout(doc,visit){
     if(e.target.id==='btnAdminRefreshUsers') return loadUsers();
     if(e.target.id==='btnAdminCreateUser'){
       try{
-        const body={action:'create',first_name:$('adminFirstName').value.trim(),last_name:$('adminLastName').value.trim(),email:$('adminEmail').value.trim(),password:$('adminPassword').value,role:$('adminRole').value,is_active:true};
+        const body={action:'create',first_name:$('adminFirstName').value.trim(),last_name:$('adminLastName').value.trim(),email:$('adminEmail').value.trim(),password:$('adminPassword').value,role:'user',is_active:true};
         if(!body.email||!body.password) throw new Error('Vul e-mailadres en tijdelijk wachtwoord in.');
         if(body.password.length<8) throw new Error('Gebruik minimaal 8 tekens voor het wachtwoord.');
         await adminCall(body);['adminFirstName','adminLastName','adminEmail','adminPassword'].forEach(id=>$(id).value='');alert('Gebruiker is aangemaakt.');await loadUsers();
@@ -5503,6 +5529,48 @@ async function drawVisitPdfLayout(doc,visit){
   });
   $('saveTomTomSecure')?.addEventListener('click',async()=>{try{if(!GJ_AUTH?.isAdmin)throw new Error('Geen beheerdersrechten.');const key=$('setLive').value.trim();if(!key)throw new Error('Vul eerst de TomTom API-sleutel in.');const {error}=await GJ_AUTH.sb.rpc('set_tomtom_secret',{p_key:key,p_enabled:true});if(error)throw error;$('setLive').value='';window.GJ_TOMTOM_ENABLED=true;$('tomtomSecureStatus').textContent='TomTom staat online voor alle gebruikers.';$('tomtomSecureStatus').className='syncStatus ok';alert('TomTom is beveiligd opgeslagen en ingeschakeld.')}catch(e){alert(e.message)}});
   $('disableTomTomSecure')?.addEventListener('click',async()=>{try{if(!GJ_AUTH?.isAdmin)throw new Error('Geen beheerdersrechten.');const {error}=await GJ_AUTH.sb.rpc('set_tomtom_secret',{p_key:'',p_enabled:false});if(error)throw error;window.GJ_TOMTOM_ENABLED=false;$('tomtomSecureStatus').textContent='TomTom staat uit.';$('tomtomSecureStatus').className='syncStatus busy';}catch(e){alert(e.message)}});
+})();
+</script>
+
+<script id="v100ContactLaptop">
+(function(){
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=v=>{try{return new Intl.DateTimeFormat('nl-NL',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}catch{return v||''}};
+  const label=s=>({nieuw:'Nieuw',in_behandeling:'In behandeling',beantwoord:'Beantwoord',gesloten:'Gesloten'}[s]||s);
+  let channel=null;
+  async function loadMine(){
+    if(!GJ_AUTH?.sb||!GJ_AUTH?.profile)return;
+    const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').eq('user_id',GJ_AUTH.profile.id).order('created_at',{ascending:false});
+    const box=document.getElementById('contactMyMessages'); if(!box)return;
+    if(error){box.innerHTML='<div class="syncStatus err">'+esc(error.message)+'</div>';return}
+    box.innerHTML=(data||[]).length?(data||[]).map(m=>`<article class="contactCard"><div class="contactHead"><div><strong>${esc(m.subject)}</strong><div class="contactMeta">${fmt(m.created_at)}</div></div><span class="pill">${esc(label(m.status))}</span></div><div class="contactText">${esc(m.message)}</div>${m.admin_response?`<div class="contactReply"><strong>Antwoord beheerder</strong><div class="contactText">${esc(m.admin_response)}</div></div>`:''}</article>`).join(''):'<div class="muted">Je hebt nog geen berichten verstuurd.</div>';
+  }
+  async function loadInbox(){
+    if(!GJ_AUTH?.isAdmin)return;
+    const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').order('created_at',{ascending:false});
+    const box=document.getElementById('adminContactInbox'); if(!box)return;
+    if(error){box.innerHTML='<div class="syncStatus err">'+esc(error.message)+'</div>';return}
+    const rows=data||[], open=rows.filter(x=>!['beantwoord','gesloten'].includes(x.status)).length;
+    const badge=document.getElementById('adminContactBadge'); if(badge)badge.innerHTML=open?`<span class="contactBadge">${open}</span>`:'';
+    box.innerHTML=rows.length?rows.map(m=>`<article class="contactCard" data-contact-id="${esc(m.id)}"><div class="contactHead"><div><strong>${esc(m.subject)}</strong><div class="contactMeta">${esc(m.sender_name||m.sender_email||'Gebruiker')} · ${esc(m.sender_email||'')} · ${fmt(m.created_at)}</div></div><span class="pill">${esc(label(m.status))}</span></div><div class="contactText">${esc(m.message)}</div><div class="contactActions"><label>Status<select class="contactAdminState"><option value="nieuw" ${m.status==='nieuw'?'selected':''}>Nieuw</option><option value="in_behandeling" ${m.status==='in_behandeling'?'selected':''}>In behandeling</option><option value="beantwoord" ${m.status==='beantwoord'?'selected':''}>Beantwoord</option><option value="gesloten" ${m.status==='gesloten'?'selected':''}>Gesloten</option></select></label><label>Antwoord<textarea class="contactAdminReply" placeholder="Typ antwoord aan gebruiker...">${esc(m.admin_response||'')}</textarea></label><button type="button" class="contactAdminSave">Opslaan</button></div></article>`).join(''):'<div class="muted">De contact-inbox is leeg.</div>';
+  }
+  async function send(){
+    const status=document.getElementById('contactStatus'), message=document.getElementById('contactMessage').value.trim();
+    if(message.length<3){status.textContent='Vul een duidelijke vraag in.';status.className='syncStatus err';return}
+    status.textContent='Wordt verstuurd…';status.className='syncStatus busy';
+    const p=GJ_AUTH.profile||{};
+    const row={user_id:p.id,sender_name:p.full_name||[p.first_name,p.last_name].filter(Boolean).join(' ')||p.email,sender_email:p.email,subject:document.getElementById('contactSubject').value,message};
+    const {error}=await GJ_AUTH.sb.from('contact_messages').insert(row);
+    if(error){status.textContent=error.message;status.className='syncStatus err';return}
+    document.getElementById('contactMessage').value='';status.textContent='Je vraag is verstuurd.';status.className='syncStatus ok';await loadMine();
+  }
+  document.addEventListener('click',async e=>{
+    if(e.target.id==='contactSend')return send();
+    if(e.target.id==='contactRefresh')return loadMine();
+    if(e.target.id==='adminContactRefresh')return loadInbox();
+    const save=e.target.closest('.contactAdminSave'); if(save){const card=save.closest('[data-contact-id]'),state=card.querySelector('.contactAdminState').value,reply=card.querySelector('.contactAdminReply').value.trim();save.disabled=true;const patch={status:state,admin_response:reply||null,answered_at:reply?new Date().toISOString():null,answered_by:reply?GJ_AUTH.profile.id:null};const {error}=await GJ_AUTH.sb.from('contact_messages').update(patch).eq('id',card.dataset.contactId);save.disabled=false;if(error)alert(error.message);else await loadInbox();}
+  });
+  window.addEventListener('gj-auth-ready',async()=>{await loadMine();if(GJ_AUTH.isAdmin)await loadInbox();if(channel)GJ_AUTH.sb.removeChannel(channel);channel=GJ_AUTH.sb.channel('contact-v10').on('postgres_changes',{event:'*',schema:'public',table:'contact_messages'},()=>{loadMine();if(GJ_AUTH.isAdmin)loadInbox()}).subscribe();});
 })();
 </script>
 </body>

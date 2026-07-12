@@ -420,6 +420,10 @@ body:not(.gj-admin) #adminMobile{display:none!important}
 }
 </style>
 
+
+<style id="v100ContactMobileStyles">
+#contactMobile textarea{min-height:130px}.mContactCard{background:#fff;border:1px solid var(--line,#d8dee8);border-radius:16px;padding:14px;margin:10px 0;display:grid;gap:9px}.mContactHead{display:flex;justify-content:space-between;gap:8px}.mContactText{white-space:pre-wrap;line-height:1.45}.mContactReply{background:#eef4ff;border-radius:10px;padding:10px;border-left:4px solid #123b73}.mContactActions{display:grid;gap:8px}.mContactActions textarea{min-height:90px}.mContactBadge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;align-items:center;justify-content:center;border-radius:999px;background:#b42318;color:#fff;font-size:11px;font-weight:900}
+</style>
 </head>
 <body>
 <div id="splash" class="splash"><div><small data-key="powered">Powered by</small><div class="logoBox"><img src="logo-login.png?v=9100" alt="Logo"></div></div></div>
@@ -430,6 +434,7 @@ body:not(.gj-admin) #adminMobile{display:none!important}
 <button type="button" data-screen="overview"><span class="navIcon">☷</span><span class="navLabel" data-key="overview">Overzicht</span></button>
 <button type="button" data-screen="absence"><span class="navIcon">⊘</span><span class="navLabel" data-key="absence">Afwezigheid</span></button>
 <button type="button" data-screen="settings"><span class="navIcon">⚙</span><span class="navLabel" data-key="settings">Instellingen</span></button>
+<button type="button" data-screen="contactMobile"><span class="navIcon">✉</span><span class="navLabel">Contact</span></button>
 <button type="button" data-screen="adminMobile" class="gjAdminOnly"><span class="navIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.9 8.2-7 10-4.1-1.8-7-5.3-7-10V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="navLabel" data-key="admin">Beheer</span></button>
 <div class="menuSpacer"></div><div class="menuBrand"><img src="logo-menu.png?v=9100" alt="GJ Systems — The Smarter Way"></div><button id="menuLogout" type="button" class="menuLogout"><span class="navIcon">↪</span><span class="navLabel" data-key="logout">Uitloggen</span></button><div class="version">v9.2 Language Fix</div></nav>
 <div id="profileCropOverlay" class="profileCropOverlay" aria-hidden="true"><div class="profileCropDialog"><h2 data-key="editProfilePhoto">Profielfoto aanpassen</h2><div id="cropViewport" class="cropViewport"><img id="cropImage" alt="Uitsnede"></div><input id="cropZoom" class="cropZoom" type="range" min="1" max="3" step="0.01" value="1"><div class="cropActions"><button id="cropCancel" type="button" class="cancel" data-key="cancel">Annuleren</button><button id="cropSave" type="button" data-key="save">Opslaan</button></div></div></div>
@@ -440,6 +445,18 @@ body:not(.gj-admin) #adminMobile{display:none!important}
 <section id="absence" class="screen"><h1 data-key="absence">Afwezigheid</h1><div class="panel"><div class="form"><label><span data-key="type">Type</span><select id="blockType"><option>Verlof</option><option>Ziekte</option><option>Training</option><option>Overig</option></select></label><div class="formRow absenceDates"><label class="compactDateField"><span data-key="startDate">Startdatum</span><input id="blockStart" type="date"></label><label class="compactDateField"><span data-key="endDate">Einddatum</span><input id="blockEnd" type="date"></label></div><div class="formRow absenceTimes"><label class="compactTimeField"><span data-key="startTime">Starttijd</span><input id="blockStartTime" type="time" placeholder="09:00"></label><label class="compactTimeField"><span data-key="endTime">Eindtijd</span><input id="blockEndTime" type="time" placeholder="12:30"></label></div><label><span data-key="description">Omschrijving</span><textarea id="blockNote" data-ph="absencePh" placeholder="Bijv. tandarts, verlof ochtend of training"></textarea></label><button id="saveBlock" type="button" data-key="save">Opslaan</button></div></div><div id="absenceList"></div></section>
 <section id="settings" class="screen"><h1 data-key="settings">Instellingen</h1><div class="panel form"><label><span data-key="language">Taal</span><select id="lang"><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="en">English</option></select></label><div class="muted">Vaste uitstraling: blauw met gouden accenten.</div><label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px"><input id="defaultSettings" type="checkbox" style="width:auto;height:auto"> <span data-key="useDefault">Als standaard gebruiken</span></label><button id="saveSettings" type="button" data-key="saveSettings">Instellingen opslaan</button><div class="settingsVersion">Versie: v9.2 Language Fix<br>Supabase: nog niet gekoppeld</div></div></section>
 
+
+<section id="contactMobile" class="screen">
+  <h1>Contact</h1><p class="muted">Stuur een vraag naar de beheerder en bekijk de reactie.</p>
+  <div class="panel form">
+    <label><span>Onderwerp</span><select id="mContactSubject"><option>Planning</option><option>Database / klanten</option><option>Account / inloggen</option><option>Route / TomTom</option><option>iPhone / mobiel</option><option>Overig</option></select></label>
+    <label><span>Vraag</span><textarea id="mContactMessage" maxlength="5000" placeholder="Beschrijf je vraag zo duidelijk mogelijk..."></textarea></label>
+    <button id="mContactSend" type="button">Vraag versturen</button><button id="mContactRefresh" type="button" class="secondary">Vernieuwen</button>
+    <div id="mContactStatus" class="adminStatus">Nog niets verstuurd.</div>
+  </div>
+  <h2>Mijn berichten</h2><div id="mContactMessages"></div>
+</section>
+
 <section id="adminMobile" class="screen gjAdminOnly">
   <h1>Beheer</h1>
   <p class="muted">Alle beheerdersfuncties staan uitsluitend in deze module.</p>
@@ -448,6 +465,7 @@ body:not(.gj-admin) #adminMobile{display:none!important}
     <button type="button" class="secondary adminTab active" data-admin-tab="users">Gebruikers</button>
     <button type="button" class="secondary adminTab" data-admin-tab="tomtom">TomTom</button>
     <button type="button" class="secondary adminTab" data-admin-tab="system">Systeem</button>
+    <button type="button" class="secondary adminTab" data-admin-tab="contact">Contact <span id="mAdminContactBadge"></span></button>
   </div>
 
   <div id="adminPaneUsers" class="adminPane">
@@ -459,7 +477,7 @@ body:not(.gj-admin) #adminMobile{display:none!important}
       </div>
       <label><span>E-mailadres</span><input id="mAdminEmail" type="email" autocomplete="off"></label>
       <label><span>Tijdelijk wachtwoord</span><input id="mAdminPassword" type="password" autocomplete="new-password"></label>
-      <label><span>Rol</span><select id="mAdminRole"><option value="user">Gebruiker</option><option value="admin">Beheerder</option></select></label>
+      <label><span>Rol</span><input value="Gebruiker" disabled><small>v10.0 gebruikt één beheerder.</small></label>
       <button id="mAdminCreateUser" type="button">Gebruiker aanmaken</button>
       <button id="mAdminRefreshUsers" type="button" class="secondary">Gebruikers vernieuwen</button>
       <div id="mAdminUserStatus" class="adminStatus">Gebruikers nog niet geladen.</div>
@@ -477,6 +495,12 @@ body:not(.gj-admin) #adminMobile{display:none!important}
       <button id="mTomTomTest" type="button" class="secondary">TomTom testen</button>
       <div id="mTomTomStatus" class="adminStatus busy">Status wordt geladen…</div>
     </div>
+  </div>
+
+
+  <div id="adminPaneContact" class="adminPane" hidden>
+    <div class="panel"><div class="adminUserHead"><div><h2>Contact-inbox</h2><p class="adminHelp">Vragen van gebruikers, synchroon op laptop en iPhone.</p></div><button id="mAdminContactRefresh" type="button" class="secondary">Vernieuwen</button></div></div>
+    <div id="mAdminContactInbox"></div>
   </div>
 
   <div id="adminPaneSystem" class="adminPane" hidden>
@@ -870,7 +894,7 @@ window.addEventListener('load',init);setTimeout(()=>{const s=$('splash');if(s){s
     if(e.target.id==='mAdminRefreshUsers')return loadMobileUsers();
     if(e.target.id==='mAdminCreateUser'){
       try{
-        const body={action:'create',first_name:$('mAdminFirstName').value.trim(),last_name:$('mAdminLastName').value.trim(),email:$('mAdminEmail').value.trim(),password:$('mAdminPassword').value,role:$('mAdminRole').value,is_active:true};
+        const body={action:'create',first_name:$('mAdminFirstName').value.trim(),last_name:$('mAdminLastName').value.trim(),email:$('mAdminEmail').value.trim(),password:$('mAdminPassword').value,role:'user',is_active:true};
         if(!body.email||!body.password)throw new Error('Vul e-mailadres en tijdelijk wachtwoord in.');
         if(body.password.length<8)throw new Error('Gebruik minimaal 8 tekens voor het wachtwoord.');
         await adminCall(body);
@@ -913,5 +937,17 @@ window.addEventListener('load',init);setTimeout(()=>{const s=$('splash');if(s){s
 })();
 </script>
 
-<script src="auth.js?v=8500"></script>
+
+<script id="v100ContactMobile">
+(function(){
+ const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=v=>{try{return new Intl.DateTimeFormat('nl-NL',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}catch{return v||''}},lab=s=>({nieuw:'Nieuw',in_behandeling:'In behandeling',beantwoord:'Beantwoord',gesloten:'Gesloten'}[s]||s);let channel;
+ async function mine(){if(!GJ_AUTH?.profile)return;const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').eq('user_id',GJ_AUTH.profile.id).order('created_at',{ascending:false});const box=$('mContactMessages');if(!box)return;if(error){box.innerHTML='<div class="adminStatus err">'+esc(error.message)+'</div>';return}box.innerHTML=(data||[]).length?data.map(m=>`<article class="mContactCard"><div class="mContactHead"><div><strong>${esc(m.subject)}</strong><div class="muted">${fmt(m.created_at)}</div></div><span class="pill">${esc(lab(m.status))}</span></div><div class="mContactText">${esc(m.message)}</div>${m.admin_response?`<div class="mContactReply"><strong>Antwoord beheerder</strong><div class="mContactText">${esc(m.admin_response)}</div></div>`:''}</article>`).join(''):'<div class="card empty">Nog geen berichten.</div>'}
+ async function inbox(){if(!GJ_AUTH?.isAdmin)return;const {data,error}=await GJ_AUTH.sb.from('contact_messages').select('*').order('created_at',{ascending:false});const box=$('mAdminContactInbox');if(!box)return;if(error){box.innerHTML='<div class="adminStatus err">'+esc(error.message)+'</div>';return}const rows=data||[],open=rows.filter(x=>!['beantwoord','gesloten'].includes(x.status)).length;$('mAdminContactBadge').innerHTML=open?`<span class="mContactBadge">${open}</span>`:'';box.innerHTML=rows.length?rows.map(m=>`<article class="mContactCard" data-mid="${esc(m.id)}"><div class="mContactHead"><div><strong>${esc(m.subject)}</strong><div class="muted">${esc(m.sender_name||m.sender_email||'Gebruiker')} · ${fmt(m.created_at)}</div></div><span class="pill">${esc(lab(m.status))}</span></div><div class="mContactText">${esc(m.message)}</div><div class="mContactActions"><label><span>Status</span><select class="mContactState"><option value="nieuw" ${m.status==='nieuw'?'selected':''}>Nieuw</option><option value="in_behandeling" ${m.status==='in_behandeling'?'selected':''}>In behandeling</option><option value="beantwoord" ${m.status==='beantwoord'?'selected':''}>Beantwoord</option><option value="gesloten" ${m.status==='gesloten'?'selected':''}>Gesloten</option></select></label><label><span>Antwoord</span><textarea class="mContactReplyInput">${esc(m.admin_response||'')}</textarea></label><button class="mContactSave" type="button">Opslaan</button></div></article>`).join(''):'<div class="card empty">Inbox is leeg.</div>'}
+ async function send(){const st=$('mContactStatus'),msg=$('mContactMessage').value.trim();if(msg.length<3){st.textContent='Vul een duidelijke vraag in.';st.className='adminStatus err';return}st.textContent='Wordt verstuurd…';st.className='adminStatus busy';const p=GJ_AUTH.profile,row={user_id:p.id,sender_name:p.full_name||[p.first_name,p.last_name].filter(Boolean).join(' ')||p.email,sender_email:p.email,subject:$('mContactSubject').value,message:msg};const {error}=await GJ_AUTH.sb.from('contact_messages').insert(row);if(error){st.textContent=error.message;st.className='adminStatus err';return}$('mContactMessage').value='';st.textContent='Je vraag is verstuurd.';st.className='adminStatus ok';await mine()}
+ document.addEventListener('click',async e=>{if(e.target.id==='mContactSend')return send();if(e.target.id==='mContactRefresh')return mine();if(e.target.id==='mAdminContactRefresh')return inbox();const b=e.target.closest('.mContactSave');if(b){const c=b.closest('[data-mid]'),reply=c.querySelector('.mContactReplyInput').value.trim(),status=c.querySelector('.mContactState').value;b.disabled=true;const {error}=await GJ_AUTH.sb.from('contact_messages').update({status,admin_response:reply||null,answered_at:reply?new Date().toISOString():null,answered_by:reply?GJ_AUTH.profile.id:null}).eq('id',c.dataset.mid);b.disabled=false;if(error)alert(error.message);else await inbox()}});
+ window.addEventListener('gj-auth-ready',async()=>{await mine();if(GJ_AUTH.isAdmin)await inbox();if(channel)GJ_AUTH.sb.removeChannel(channel);channel=GJ_AUTH.sb.channel('contact-mobile-v10').on('postgres_changes',{event:'*',schema:'public',table:'contact_messages'},()=>{mine();if(GJ_AUTH.isAdmin)inbox()}).subscribe()});
+})();
+</script>
+
+<script src="auth.js?v=10000"></script>
 </body></html>
