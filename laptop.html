@@ -5573,5 +5573,42 @@ async function drawVisitPdfLayout(doc,visit){
   window.addEventListener('gj-auth-ready',async()=>{await loadMine();if(GJ_AUTH.isAdmin)await loadInbox();if(channel)GJ_AUTH.sb.removeChannel(channel);channel=GJ_AUTH.sb.channel('contact-v10').on('postgres_changes',{event:'*',schema:'public',table:'contact_messages'},()=>{loadMine();if(GJ_AUTH.isAdmin)loadInbox()}).subscribe();});
 })();
 </script>
+
+<script id="v101ProfileRoleSync">
+(function(){
+  const ADMIN_EMAIL='georgio_jejanan@hotmail.com';
+  const isAdminProfile=p=>String(p?.role||'').toLowerCase()==='admin'||String(p?.email||'').toLowerCase()===ADMIN_EMAIL;
+  const dataUrlToBlob=dataUrl=>{const [head,body]=String(dataUrl||'').split(',');const mime=(head.match(/data:([^;]+)/)||[])[1]||'image/jpeg';const bytes=atob(body||'');const arr=new Uint8Array(bytes.length);for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);return new Blob([arr],{type:mime})};
+  const applyPhoto=url=>{
+    if(!url)return;
+    const pairs=[['desktopProfileImage','desktopProfileButton'],['profileImage','profileButton']];
+    for(const [imgId,btnId] of pairs){const img=document.getElementById(imgId),btn=document.getElementById(btnId);if(img&&btn){img.src=url;btn.classList.add('hasPhoto')}}
+    try{localStorage.setItem('gj_profile_photo',url)}catch(_){ }
+  };
+  async function refreshProfile(){
+    const a=window.GJ_AUTH;if(!a?.sb||!a?.profile?.id)return;
+    const {data,error}=await a.sb.from('profiles').select('*').eq('id',a.profile.id).single();
+    if(error||!data)return;
+    a.profile=data;a.isAdmin=isAdminProfile(data);document.body.classList.toggle('gj-admin',a.isAdmin);
+    document.querySelectorAll('.gjAdminOnly').forEach(el=>{if(a.isAdmin)el.style.removeProperty('display')});
+    applyPhoto(data.avatar_url);
+  }
+  async function uploadProfilePhoto(dataUrl){
+    const a=window.GJ_AUTH;if(!a?.sb||!a?.profile?.id||!dataUrl)return;
+    try{
+      const path=a.profile.id+'/profile.jpg';
+      const {error:upErr}=await a.sb.storage.from('profile-photos').upload(path,dataUrlToBlob(dataUrl),{contentType:'image/jpeg',upsert:true,cacheControl:'3600'});
+      if(upErr)throw upErr;
+      const pub=a.sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl+'?v='+Date.now();
+      const {data,error}=await a.sb.from('profiles').update({avatar_url:pub,updated_at:new Date().toISOString()}).eq('id',a.profile.id).select().single();
+      if(error)throw error;if(data)a.profile=data;applyPhoto(pub);
+    }catch(err){console.error('Profielfoto synchroniseren mislukt',err);alert('De profielfoto is lokaal opgeslagen, maar synchroniseren is mislukt: '+err.message)}
+  }
+  window.addEventListener('gj-auth-ready',refreshProfile);
+  window.addEventListener('gj-profile-photo-changed',e=>uploadProfilePhoto(e.detail));
+  window.addEventListener('focus',refreshProfile);
+})();
+</script>
+
 </body>
 </html>
