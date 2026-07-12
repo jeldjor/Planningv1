@@ -32,5 +32,10 @@
    try{const full=[first.trim(),last.trim()].filter(Boolean).join(' ');const {error}=await GJ_AUTH.sb.from('profiles').update({first_name:first.trim(),last_name:last.trim(),full_name:full,updated_at:new Date().toISOString()}).eq('id',edit.dataset.id);if(error)throw error;alert('Gebruiker is bijgewerkt.');$('mAdminRefreshUsers')?.click();$('btnAdminRefreshUsers')?.click()}catch(err){alert('Gebruiker bewerken mislukt: '+err.message)}
  });
  function setVersion(){document.title=document.title.replace(/v10\.5/g,'v10.3');document.querySelectorAll('.version,.productVersion,.settingsVersion').forEach(e=>{e.innerHTML=e.innerHTML.replace(/v10\.5/g,'v10.3').replace(/v9\.0/g,'v10.3')})}
- window.addEventListener('gj-auth-ready',()=>{setVersion();setTimeout(addUserActions,500);new MutationObserver(addUserActions).observe(document.body,{subtree:true,childList:true})});
+ function moveDataManagementToSettings(){
+   const settings=$('settings'),grid=$('adminPaneSystem')?.querySelector('.beheerGrid');if(!settings||!grid||settings.querySelector('.v103UserDataManagement'))return;
+   const box=document.createElement('section');box.className='v103UserDataManagement settingsBlock';box.innerHTML='<h3>Gegevens beheren</h3><p class="muted">Beheer je eigen planning, database, historie, routecache en back-up. Voor verwijderen moet je altijd exact BEVESTIG typen.</p>';
+   box.appendChild(grid);settings.appendChild(box);
+ }
+ window.addEventListener('gj-auth-ready',()=>{setVersion();moveDataManagementToSettings();setTimeout(addUserActions,500);new MutationObserver(addUserActions).observe(document.body,{subtree:true,childList:true})});
 })();

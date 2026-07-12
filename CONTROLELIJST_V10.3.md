@@ -15,6 +15,8 @@ Basis: `Planning-GJsystems-v10.5-corrected`.
 
 ## Laptop
 
+- ✅ Gereed — Alle negen knoppen voor planning, vaste bezoeken, niet ingepland, historie, routecache, back-up, database en volledige reset staan onder Instellingen voor iedere ingelogde gebruiker.
+- ✅ Gereed — Verwijderacties gebruiken de actieve gebruikerswerkruimte en de ingelogde Supabase-sessie; gegevens van andere gewone gebruikers blijven door de bestaande RLS-beveiliging afgeschermd.
 - ✅ Gereed — Dezelfde ronde cropper en ronde foto-opmaak als op iPhone.
 - ✅ Gereed — Maand/Week/Dag en Vastzetten/Losmaken/Optimaliseren staan in dezelfde compacte toolbarregel; op smallere schermen blijft de regel horizontaal beschikbaar.
 - ✅ Gereed — Instellingen → Profiel is compact gemaakt zonder functies te verwijderen.

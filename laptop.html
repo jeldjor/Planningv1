@@ -5306,6 +5306,7 @@ async function drawVisitPdfLayout(doc,visit){
   let busy=false;
 
   function client(){
+    if(window.GJ_AUTH?.sb) return window.GJ_AUTH.sb;
     if(window.gjAdminSupa) return window.gjAdminSupa;
     if(!window.supabase || !window.supabase.createClient) throw new Error('Supabase is nog niet geladen. Vernieuw de pagina.');
     window.gjAdminSupa=window.supabase.createClient(URL,KEY);
@@ -5355,7 +5356,7 @@ async function drawVisitPdfLayout(doc,visit){
     else if(action==='history') db.history=[];
     else if(action==='routes'){db.routeCache={};db.routeStats={};}
     else if(action==='database' || action==='all'){
-      try{localStorage.removeItem('bp_pro_v2')}catch(e){}
+      try{localStorage.removeItem('bp_pro_v2_'+(sessionStorage.getItem('gj_workspace_storage_id')||'guest'))}catch(e){}
       if(typeof DEFAULT!=='undefined') db=structuredClone(DEFAULT);
       else {db.customers=[];db.visits=[];db.fixed=[];db.unplanned=[];db.history=[];db.routeCache={};db.routeStats={};}
     }
@@ -5363,17 +5364,19 @@ async function drawVisitPdfLayout(doc,visit){
   }
   async function directFallback(action){
     const c=client();
-    const all=q=>q.not('id','is',null);
+    const workspaceId=window.GJ_AUTH?.workspaceUserId||window.GJ_AUTH?.profile?.id;
+    const own=(table,q)=>workspaceId&&['planning','customers','app_day_settings','app_absences'].includes(table)?q.eq('user_id',workspaceId):q;
+    const all=(table,q)=>own(table,q.not('id','is',null));
     if(action==='planning'){
-      const r=await all(c.from('planning').delete()); if(r.error) throw r.error;
+      const r=await all('planning',c.from('planning').delete()); if(r.error) throw r.error;
     }else if(action==='fixed'){
-      const r=await c.from('planning').delete().eq('vast',true); if(r.error) throw r.error;
+      const r=await own('planning',c.from('planning').delete().eq('vast',true)); if(r.error) throw r.error;
     }else if(action==='history'){
-      let r=await all(c.from('visit_photos').delete()); if(r.error) throw r.error;
-      r=await all(c.from('visit_history').delete()); if(r.error) throw r.error;
+      let r=await all('visit_photos',c.from('visit_photos').delete()); if(r.error) throw r.error;
+      r=await all('visit_history',c.from('visit_history').delete()); if(r.error) throw r.error;
     }else if(action==='database'||action==='all'){
       for(const table of ['visit_photos','visit_history','planning','customers']){
-        const r=await all(c.from(table).delete()); if(r.error) throw new Error(table+': '+r.error.message);
+        const r=await all(table,c.from(table).delete()); if(r.error) throw new Error(table+': '+r.error.message);
       }
     }
     return {fallback:true};

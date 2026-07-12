@@ -43,5 +43,11 @@ body button:disabled{opacity:.55!important}
 .nav{font-size:clamp(12px,1.65vh,16px)!important;padding:clamp(7px,1.15vh,12px) 12px!important;line-height:1.1!important}
 
 .adminUserActions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+#settings .v103UserDataManagement{margin-top:18px!important;padding-top:16px!important;border-top:1px solid var(--line,#d8dee8)!important}
+#settings .v103UserDataManagement .beheerGrid{display:grid!important;grid-template-columns:repeat(3,minmax(180px,1fr))!important;gap:10px!important;margin-top:12px!important}
+#settings .v103UserDataManagement #btnClearPlanning,#settings .v103UserDataManagement #btnClearFixed,#settings .v103UserDataManagement #btnClearUnplanned,
+#settings .v103UserDataManagement #btnClearHistory,#settings .v103UserDataManagement #btnClearRoutes,#settings .v103UserDataManagement #btnClearDatabase,
+#settings .v103UserDataManagement #btnResetAll,#settings .v103UserDataManagement #btnBackup,#settings .v103UserDataManagement #btnRestore{display:block!important;width:100%!important}
 @media(max-width:1180px){#calendar .toolbar{overflow-x:auto!important;padding-bottom:4px!important}#calendar .toolbar>.compactActions{margin-left:0!important}}
-@media(max-width:760px){#settings .v102SettingsGrid{grid-template-columns:1fr!important}.productCard{min-height:104px}.menuPanel{overflow-y:auto}}
+@media(max-width:1100px){#settings .v103UserDataManagement .beheerGrid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}}
+@media(max-width:760px){#settings .v102SettingsGrid{grid-template-columns:1fr!important}#settings .v103UserDataManagement .beheerGrid{grid-template-columns:1fr!important}.productCard{min-height:104px}.menuPanel{overflow-y:auto}}
