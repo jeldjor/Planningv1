@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Planning-GJsystems v10.6</title>
+<title>Planning-GJsystems v10.7</title>
 <script>
 // v6: failsafe tegen blijven hangen op beginscherm/logo
 window.__GJ_APP_VERSION__='8.4';
@@ -436,7 +436,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
 .v102SettingsGrid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:14px;margin-top:14px}.v102Card{border:1px solid var(--line,#d8dee8);border-radius:14px;background:#fff;padding:14px;display:grid;gap:10px}.v102Card h3{margin:0;color:#123b73}.v102ProfilePreview{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#eef2f6;border:4px solid var(--logoOrange)}.v102Criteria{font-size:12px;color:#667085;line-height:1.5}.v102Criteria .ok{color:#067647}.v102Criteria .bad{color:#b42318}.v102Impersonation{position:fixed;z-index:99990;left:246px;right:0;top:0;background:var(--logoOrange);color:#fff;padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;box-shadow:0 4px 16px #0003}.v102Impersonation button{background:#fff!important;color:#9a4d00!important;border-color:#fff!important;padding:6px 10px!important}.v102Impersonating .main{padding-top:58px!important}.v102SupportFilters{display:grid;grid-template-columns:1fr 180px 180px;gap:8px;margin:10px 0}.v102Chat{display:grid;gap:8px;max-height:360px;overflow:auto;padding:8px;background:#f8fafc;border-radius:10px}.v102Bubble{max-width:82%;padding:9px 11px;border-radius:12px;white-space:pre-wrap}.v102Bubble.user{background:#eaf0f8;justify-self:start}.v102Bubble.admin{background:#123b73;color:#fff;justify-self:end}.v102Unread{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#ef7d00;color:#fff;font-size:11px}@media(max-width:1050px){.v102Impersonation{left:0;bottom:66px;top:auto}.v102Impersonating .main{padding-top:0!important;padding-bottom:120px!important}}@media(max-width:760px){.v102SettingsGrid,.v102SupportFilters{grid-template-columns:1fr}.v102Impersonation{font-size:12px;padding:7px}.v102Card{padding:12px}}
 </style>
 <link rel="stylesheet" href="v105.css?v=10500">
-<link rel="stylesheet" href="v106.css?v=10600">
+<link rel="stylesheet" href="v106.css?v=10700">
 </head>
 <body>
 <div id="splash" class="splash"><div><small data-key="powered">Powered by</small><div class="logoBox"><img src="logo-login.png?v=9100" alt="Logo"></div></div></div>
@@ -449,7 +449,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
 <button type="button" data-screen="settings"><span class="navIcon">⚙</span><span class="navLabel" data-key="settings">Instellingen</span></button>
 <button type="button" data-screen="contactMobile"><span class="navIcon">✉</span><span class="navLabel">Contact</span></button>
 <button type="button" data-screen="adminMobile" class="gjAdminOnly"><span class="navIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.9 8.2-7 10-4.1-1.8-7-5.3-7-10V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="navLabel" data-key="admin">Beheer</span></button>
-<div class="menuSpacer"></div><div class="menuBrand"><img src="logo-menu.png?v=10600" alt="GJ Systems — The Smarter Way"></div><button id="menuLogout" type="button" class="menuLogout"><span class="navIcon">↪</span><span class="navLabel" data-key="logout">Uitloggen</span></button><div class="version">v10.6</div></nav>
+<div class="menuSpacer"></div><div class="menuBrand"><img src="logo-menu.png?v=10700" alt="GJ Systems — The Smarter Way"></div><button id="menuLogout" type="button" class="menuLogout"><span class="navIcon">↪</span><span class="navLabel" data-key="logout">Uitloggen</span></button><div class="version">v10.7</div></nav>
 <div id="profileCropOverlay" class="profileCropOverlay" aria-hidden="true"><div class="profileCropDialog"><h2 data-key="editProfilePhoto">Profielfoto aanpassen</h2><div id="cropViewport" class="cropViewport"><img id="cropImage" alt="Uitsnede"></div><input id="cropZoom" class="cropZoom" type="range" min="1" max="3" step="0.01" value="1"><div class="cropActions"><button id="cropCancel" type="button" class="cancel" data-key="cancel">Annuleren</button><button id="cropSave" type="button" data-key="save">Opslaan</button></div></div></div>
 <main>
 <section id="today" class="screen active"><h1 data-key="today">Vandaag</h1><p class="muted" id="todayDate"></p><div class="panel"><div class="grid2 todayControls"><label class="compactTimeField fieldWithIcon"><span data-key="depart">Vertrektijd</span><span class="fieldIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3.5 2"></path></svg></span><input id="depart" type="time" value="08:00"></label><label class="compactRouteField fieldWithIcon"><span data-key="routeApp">Route-app</span><span class="fieldIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c3.5-1 4-4 4-7s1.5-5 5-5h4"></path><path d="M15 4l3 3-3 3"></path><circle cx="5" cy="19" r="1.5"></circle></svg></span><select id="navApp"><option>Waze</option><option>Google Maps</option><option>Apple Kaarten</option></select></label></div><div class="stats"><div class="stat"><div class="statIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><circle cx="16.5" cy="9" r="2.5"></circle><path d="M3.5 19c.6-3.2 2.6-5 5.5-5s4.9 1.8 5.5 5"></path><path d="M14 14.5c2.7 0 4.5 1.5 5 4.5"></path></svg></div><strong id="statVisits">0</strong><span data-key="customers">klanten</span></div><div class="stat"><div class="statIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"></path><circle cx="12" cy="10" r="2"></circle></svg></div><strong id="statKm">–</strong><span>km</span></div><div class="stat"><div class="statIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14l-1.5-5.5a2 2 0 0 0-1.9-1.5H8.4a2 2 0 0 0-1.9 1.5L5 16z"></path><path d="M4 16v3h2v-2h12v2h2v-3"></path><circle cx="8" cy="16" r="1"></circle><circle cx="16" cy="16" r="1"></circle></svg></div><strong id="statTravel">–</strong><span data-key="travelTime">reistijd</span></div><div class="stat"><div class="statIcon"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.2l2.6 2.6L16.5 9"></path></svg></div><strong id="statDone">0</strong><span data-key="ready">klaar</span></div></div><button id="fullRouteBtn" class="todayMainButton" type="button"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14l-1.5-5.5a2 2 0 0 0-1.9-1.5H8.4a2 2 0 0 0-1.9 1.5L5 16z"></path><path d="M4 16v3h2v-2h12v2h2v-3"></path><circle cx="8" cy="16" r="1"></circle><circle cx="16" cy="16" r="1"></circle></svg><span class="buttonLabel" data-key="openFullRoute">Volledige route openen</span></button><div class="smallBtns" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button id="togglePause" type="button" class="todayActionButton"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h11v6.5A3.5 3.5 0 0 1 12.5 18h-4A3.5 3.5 0 0 1 5 14.5V8z"></path><path d="M16 10h2a2 2 0 0 1 0 4h-2"></path><path d="M7 5c0-1 1-1 1-2M11 5c0-1 1-1 1-2"></path></svg><span class="buttonLabel" data-key="togglePause">Pauze aan/uit</span></button><button id="recalcBtn" type="button" class="todayActionButton"><svg class="uiIcon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path><path d="M7 4H4v3"></path><path d="M4.8 7A9 9 0 0 1 20 9"></path></svg><span class="buttonLabel" data-key="recalc">Tijden</span></button></div></div><div id="todayRoute"></div></section>
@@ -543,7 +543,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
 </main>
 <script>
 (function(){
-const VERSION='v10.5',STORAGE='gj_mobile_v56_data_'+(sessionStorage.getItem('gj_workspace_storage_id')||'guest');
+const VERSION='v10.7',STORAGE='gj_mobile_v56_data_'+(sessionStorage.getItem('gj_workspace_storage_id')||'guest');
 const SUPABASE_URL='https://fcnsglahkjvhyfkghnpy.supabase.co';
 const SUPABASE_KEY='sb_publishable_dUtfbI9RAAwDCUBKJjjMCQ_kqIeg-ew';
 let sb=window.supabase ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY) : null;
@@ -567,7 +567,7 @@ function ts(status){
  document.querySelectorAll('#lang option').forEach(o=>o.textContent=languageNames[l][o.value]||o.textContent);
  const absenceTypes={nl:{Verlof:'Verlof',Ziekte:'Ziekte',Training:'Training',Overig:'Overig'},de:{Verlof:'Urlaub',Ziekte:'Krankheit',Training:'Schulung',Overig:'Sonstiges'},en:{Verlof:'Leave',Ziekte:'Sickness',Training:'Training',Overig:'Other'}};
  document.querySelectorAll('#blockType option').forEach(o=>o.textContent=absenceTypes[l][o.value]||o.textContent);
-}function blankDb(){return{customers:[],visits:[],blocks:[],history:[],settings:{theme:'blue',language:'nl'}}}function load(){try{return JSON.parse(localStorage.getItem(STORAGE)||'null')||blankDb()}catch(e){return blankDb()}}function save(){localStorage.setItem(STORAGE,JSON.stringify(db))}function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function addDaysIso(iso,n){const d=parseLocalDate(iso);d.setDate(d.getDate()+n);return localIso(d)}function applyTheme(){const c=COLORS.blue;document.documentElement.style.setProperty('--primary',c[0]);document.documentElement.style.setProperty('--primary-dark',c[1]);document.documentElement.style.setProperty('--soft',c[2]);db.settings.theme='blue';localStorage.setItem('gj_theme','blue')}
+}function blankDb(){return{customers:[],visits:[],blocks:[],history:[],settings:{theme:'blue',language:'nl'}}}function load(){try{return JSON.parse(localStorage.getItem(STORAGE)||'null')||blankDb()}catch(e){return blankDb()}}function save(){if(window.__GJ_WORKSPACE_CLEARING__)return;localStorage.setItem(STORAGE,JSON.stringify(db))}function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function addDaysIso(iso,n){const d=parseLocalDate(iso);d.setDate(d.getDate()+n);return localIso(d)}function applyTheme(){const c=COLORS.blue;document.documentElement.style.setProperty('--primary',c[0]);document.documentElement.style.setProperty('--primary-dark',c[1]);document.documentElement.style.setProperty('--soft',c[2]);db.settings.theme='blue';localStorage.setItem('gj_theme','blue')}
 
 function mapCustomerRow(c){return {id:c.id,name:c.naam||c.winkel||'Klant',street:c.straat||c.adres||'',nr:c.huisnr||'',postal:c.postcode||'',city:c.plaats||'',phone:c.telefoon_winkel||c.telefoon||'',email:c.email||'',lat:c.latitude,lng:c.longitude,note:c.notities||''}}
 async function loadPlanningFromSupabase(){
@@ -583,8 +583,9 @@ async function loadPlanningFromSupabase(){
     const ids=[...new Set(planning.map(p=>p.customer_id).filter(Boolean))];
     let customers=[];
     if(ids.length){const res=await sb.from('customers').select('*').in('id',ids);if(res.error)throw res.error;customers=res.data||[]}
-    db.customers=customers.map(r=>({id:String(r.id),name:r.winkel||r.naam||r.klantnaam||r.keten||'Klant',chain:r.keten||'',street:r.straat||r.adres||'',nr:r.huisnr||r.huisnummer||'',postal:r.postcode||'',city:r.plaats||'',country:r.land||'',lat:r.latitude,lng:r.longitude,opening:r.openingstijden||null,visitDuration:Number(r.bezoektijd||30)}));
-    db.visits=planning.filter(p=>p.datum).map(p=>({id:String(p.id),planningId:String(p.id),customerId:String(p.customer_id),date:p.datum,time:String(p.starttijd||'').slice(0,5),end:String(p.eindtijd||'').slice(0,5),status:p.status||'Gepland',order:Number(p.route_volgorde||999),travel:Number(p.reistijd_min||0),duration:Number(p.bezoekduur_min||30),pause:false,updatedAt:p.updated_at||'',fromSupabase:true}));
+    db.customers=customers.map(r=>({id:String(r.id),name:r.winkel||r.naam||r.klantnaam||r.keten||'Onbekende klant',chain:r.keten||'',street:r.straat||r.adres||'',nr:r.huisnr||r.huisnummer||'',postal:r.postcode||'',city:r.plaats||'',country:r.land||'',lat:r.latitude,lng:r.longitude,opening:r.openingstijden||null,visitDuration:Number(r.bezoektijd||30)}));
+    const customerIds=new Set(db.customers.map(c=>c.id));
+    db.visits=planning.filter(p=>p.datum&&customerIds.has(String(p.customer_id))).map(p=>{const mins=Number(p.reistijd_min||0),kms=Number(p.afstand_km||0),mode=p.route_mode==='walk'?'walk':'drive';return{id:String(p.id),planningId:String(p.id),customerId:String(p.customer_id),date:p.datum,time:String(p.starttijd||'').slice(0,5),end:String(p.eindtijd||'').slice(0,5),status:p.status||'Gepland',order:Number(p.route_volgorde||999),travel:mins,duration:Number(p.bezoekduur_min||30),pause:false,mode,leg:mins?((mode==='walk'?'🚶 ':'🚗 ')+fmtTravel(mins)+(kms?' · '+fmtKm(kms):'')):'',updatedAt:p.updated_at||'',fromSupabase:true}});
     db.dayDepartures={};
     if(!daysRes.error)(daysRes.data||[]).forEach(r=>{if(r.datum&&r.vertrektijd)db.dayDepartures[r.datum]=String(r.vertrektijd).slice(0,5)});
     db.blocks=absRes.error?[]:(absRes.data||[]).map(r=>({id:String(r.id),type:r.type||'Overig',start:r.start_date,end:r.end_date||r.start_date,startTime:String(r.start_time||'').slice(0,5),endTime:String(r.end_time||'').slice(0,5),note:r.note||'',fromSupabase:true}));
@@ -1018,7 +1019,7 @@ let appInitialized=false;async function initAfterAuth(){if(appInitialized||!wind
 })();
 </script>
 
-<script src="auth.js?v=10601"></script>
+<script src="auth.js?v=10700"></script>
 
 <script id="v102CoreScript">
 (()=>{
@@ -1036,5 +1037,5 @@ let appInitialized=false;async function initAfterAuth(){if(appInitialized||!wind
 })();
 </script>
 <script src="v105.js?v=10500"></script>
-<script src="v106.js?v=10601"></script>
+<script src="v106.js?v=10700"></script>
 </body></html>

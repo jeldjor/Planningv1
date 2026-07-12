@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Planning-GJsystems v10.6</title>
+<title>Planning-GJsystems v10.7</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -1605,7 +1605,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
 .v102SettingsGrid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:14px;margin-top:14px}.v102Card{border:1px solid var(--line,#d8dee8);border-radius:14px;background:#fff;padding:14px;display:grid;gap:10px}.v102Card h3{margin:0;color:#123b73}.v102ProfilePreview{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#eef2f6;border:4px solid var(--logoOrange)}.v102Criteria{font-size:12px;color:#667085;line-height:1.5}.v102Criteria .ok{color:#067647}.v102Criteria .bad{color:#b42318}.v102Impersonation{position:fixed;z-index:99990;left:246px;right:0;top:0;background:var(--logoOrange);color:#fff;padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;box-shadow:0 4px 16px #0003}.v102Impersonation button{background:#fff!important;color:#9a4d00!important;border-color:#fff!important;padding:6px 10px!important}.v102Impersonating .main{padding-top:58px!important}.v102SupportFilters{display:grid;grid-template-columns:1fr 180px 180px;gap:8px;margin:10px 0}.v102Chat{display:grid;gap:8px;max-height:360px;overflow:auto;padding:8px;background:#f8fafc;border-radius:10px}.v102Bubble{max-width:82%;padding:9px 11px;border-radius:12px;white-space:pre-wrap}.v102Bubble.user{background:#eaf0f8;justify-self:start}.v102Bubble.admin{background:#123b73;color:#fff;justify-self:end}.v102Unread{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#ef7d00;color:#fff;font-size:11px}@media(max-width:1050px){.v102Impersonation{left:0;bottom:66px;top:auto}.v102Impersonating .main{padding-top:0!important;padding-bottom:120px!important}}@media(max-width:760px){.v102SettingsGrid,.v102SupportFilters{grid-template-columns:1fr}.v102Impersonation{font-size:12px;padding:7px}.v102Card{padding:12px}}
 </style>
 <link rel="stylesheet" href="v105.css?v=10500">
-<link rel="stylesheet" href="v106.css?v=10600">
+<link rel="stylesheet" href="v106.css?v=10700">
 </head>
 <body>
 <aside class="sidebar">
@@ -1660,7 +1660,7 @@ button:not(.secondary):not(.danger):not(.warningButton):not(.nav):not(.iconBtn) 
       });
     })();
     </script>
-    <div class="productVersion">v10.6</div>
+    <div class="productVersion">v10.7</div>
   </div>
 </aside>
 <div id="profileCropOverlay" class="profileCropOverlay" aria-hidden="true"><div class="profileCropDialog"><h2>Profielfoto aanpassen</h2><div id="cropViewport" class="cropViewport"><img id="cropImage" alt="Uitsnede"></div><input id="cropZoom" class="cropZoom" type="range" min="1" max="3" step="0.01" value="1"><div class="cropActions"><button id="cropCancel" type="button" class="cancel">Annuleren</button><button id="cropSave" type="button">Opslaan</button></div></div></div>
@@ -2077,7 +2077,7 @@ function supaCustomerToApp(r){
   c.Periode=r.periode||"";
   c.Bezoektijd=r.bezoektijd??"";
   c.Bezoekdagen=r.bezoekdagen||"";
-  c.Openingstijden=typeof r.openingstijden==="string"?r.openingstijden:(r.openingstijden?JSON.stringify(r.openingstijden):"");
+  c.Openingstijden=typeof r.openingstijden==="string"?r.openingstijden:(r.openingstijden?.tekst||r.openingstijden?.text||(r.openingstijden?JSON.stringify(r.openingstijden):""));
   c.Opmerkingen=r.notities||"";
   c.Actief=boolToJaNee(r.actief);
   c.Contactpersoon=r.contactpersoon||"";
@@ -2227,6 +2227,7 @@ let state={screen:"calendar",view:"month",cursor:new Date(),selected:iso(new Dat
 const $=id=>document.getElementById(id);
 function load(){try{return JSON.parse(localStorage.getItem("bp_pro_v2_"+(sessionStorage.getItem("gj_workspace_storage_id")||"guest"))||"null")||structuredClone(DEFAULT)}catch{return structuredClone(DEFAULT)}} 
 function save(){
+  if(window.__GJ_WORKSPACE_CLEARING__)return true;
   try{
     localStorage.setItem("bp_pro_v2_"+(sessionStorage.getItem("gj_workspace_storage_id")||"guest"),JSON.stringify(db));
     return true;
@@ -2291,6 +2292,7 @@ async function tomtomRoute(a,b,mode="car"){
   if(error||data?.error)throw new Error(error?.message||data.error);
   const sm=data.routes?.[0]?.summary;if(!sm)return null;
   const result={km:Math.round(sm.lengthInMeters/100)/10,min:Math.max(1,Math.round(sm.travelTimeInSeconds/60)),source:'TomTom',live:true};
+  if(!Number.isFinite(result.km)||!Number.isFinite(result.min)||result.km<0||result.km>600||result.min<1||result.min>720)throw new Error('TomTom gaf een onrealistische route terug.');
   db.routeCache[key]=result;save();return result;
  }catch(e){console.warn('TomTom route:',e);return null}
 }
@@ -2506,6 +2508,7 @@ function parseOpeningHoursForDate(value,date){
     if(!raw)return null;
     if((raw.startsWith('{')&&raw.endsWith('}'))||(raw.startsWith('[')&&raw.endsWith(']'))){try{data=JSON.parse(raw)}catch(e){data=raw}}
   }
+  if(data&&typeof data==='object'&&(data.tekst||data.text))data=data.tekst||data.text;
   if(data&&typeof data==='object'){
     const keys=Object.keys(data);
     for(const k of keys){
@@ -2946,7 +2949,7 @@ function liveVisitTime(v){
     const prev=i?getC(vs[i-1].customerId):startPoint();
 
     const d=i?km(prev,c):null;
-    let travel=0;
+      let travel=0, distance=0, routeMode='car', routeLive=false;
 
     if(i===0){
       const from=startPoint(), to=c, park=num(db.settings.parking,15);
@@ -3314,7 +3317,7 @@ async function ensurePlanningCoordinates(customers,showProgress=true){
 function planningRoute(a,b,mode='car'){
   if(!hasCoords(a)||!hasCoords(b))return null;
   const cached=db.routeCache?.[routeKey(a,b,mode)];
-  if(cached&&Number.isFinite(num(cached.min,NaN))&&Number.isFinite(num(cached.km,NaN)))return cached;
+  if(cached&&Number.isFinite(num(cached.min,NaN))&&Number.isFinite(num(cached.km,NaN))&&num(cached.min)<=720&&num(cached.km)<=600)return cached;
   const direct=km(a,b); if(direct===null)return null;
   if(mode==='walk')return {km:direct,min:Math.max(1,Math.round(direct*1000/80)),live:false};
   const roadKm=Math.max(0.2,direct*1.22);
@@ -3334,7 +3337,7 @@ function simulatePlanningOrderAtDeparture(date,visits,departMin){
     if(!c||!validCoordsForCustomer(c))return {ok:false,reason:`Adres niet gevonden bij ${c?.Winkel||'klant'}`};
     const d=km(prev,c),walk=i>0&&d!==null&&d*1000<=num(db.settings.walk,300);
     const r=planningRoute(prev,c,walk?'walk':'car');
-    if(!r)return {ok:false,reason:`Route niet te berekenen naar ${c.Winkel||'klant'}`};
+    if(!r||!Number.isFinite(num(r.min,NaN))||!Number.isFinite(num(r.km,NaN))||num(r.min)>720||num(r.km)>600)return {ok:false,reason:`Ongeldige route naar ${c.Winkel||'klant'}`};
     cur+=r.min+(walk?0:num(db.settings.parking,15)); totalKm+=r.km||0;
     if(breakEnabled(date)&&!pause&&cur>=720&&i>0){cur+=num(db.settings.break,30);pause=true;}
     const dur=num(v.duration||c.Bezoektijd,60),ow=getOpeningWindow(c,date);
@@ -3351,7 +3354,7 @@ function simulatePlanningOrderAtDeparture(date,visits,departMin){
     cur+=dur; prev=c;
   }
   const home=planningRoute(prev,startPoint(),'car');
-  if(!home)return {ok:false,reason:'Terugroute niet te berekenen'};
+  if(!home||!Number.isFinite(num(home.min,NaN))||!Number.isFinite(num(home.km,NaN))||num(home.min)>720||num(home.km)>600)return {ok:false,reason:'Terugroute is ongeldig'};
   cur+=home.min; totalKm+=home.km||0;
   if(cur>t2m(db.settings.home||'18:00'))return {ok:false,reason:`Te laat thuis (${m2t(cur)})`};
   return {ok:true,end:cur,totalKm,details,totalWait,firstWait,depart:departMin};
@@ -4712,18 +4715,18 @@ async function drawVisitPdfLayout(doc,visit){
           const from=startPoint(), to=c, park=num(db.settings.parking,15);
           const cached=hasCoords(to)?db.routeCache?.[routeKey(from,to,'car')]:null;
           const r=cached||fallbackRoute(from,to,'car');
-          travel=(r.min||0)+park;
+          travel=(r.min||0)+park;distance=num(r.km,0);routeMode='car';routeLive=!!cached;
         }else{
           const d=km(prev,c);
           if(d!==null && d*1000<=num(db.settings.walk,300)){
             const cached=(hasCoords(prev)&&hasCoords(c))?db.routeCache?.[routeKey(prev,c,'walk')]:null;
             const r=cached||fallbackRoute(prev,c,'walk');
-            travel=(r.min||0);
+            travel=(r.min||0);distance=num(r.km,0);routeMode='walk';routeLive=!!cached;
           }else{
             const park=num(db.settings.parking,15);
             const cached=(hasCoords(prev)&&hasCoords(c))?db.routeCache?.[routeKey(prev,c,'car')]:null;
             const r=cached||fallbackRoute(prev,c,'car');
-            travel=(r.min||0)+park;
+            travel=(r.min||0)+park;distance=num(r.km,0);routeMode='car';routeLive=!!cached;
           }
         }
         cur+=travel;
@@ -4736,7 +4739,7 @@ async function drawVisitPdfLayout(doc,visit){
         if(te&&te.start&&te.end){
           start=t2m(te.start); end=t2m(te.end); if(end<=start) end=start+Math.max(1,dur); cur=start;
         }
-        out.set(v.id,{start:m2t(start), end:m2t(end), travel_min:travel, duration:dur, order:i+1});
+        out.set(v.id,{start:m2t(start), end:m2t(end), travel_min:travel, distance_km:distance, route_mode:routeMode, route_live:routeLive, duration:dur, order:i+1});
         cur=end;
       });
     }catch(e){console.warn('Timeline kon niet berekend worden',date,e)}
@@ -4747,18 +4750,15 @@ async function drawVisitPdfLayout(doc,visit){
     if(!client) return false;
     const maps=await customerMaps();
     setSyncStatus('Supabase: planning opslaan...', 'busy');
-    if(replace){
-      const del=await client.from('planning').delete().gte('datum',from).lte('datum',to).eq('vast',false);
-      if(del.error) throw del.error;
-    }
     const dates=[...new Set((db.visits||[]).filter(v=>v.date>=from&&v.date<=to&&v.status!=='Uit planning').map(v=>v.date))].sort();
-    const rows=[];
+    const rows=[],invalid=[];
     dates.forEach(date=>{
       const tl=dayTimeline(date);
       visitsOn(date).forEach((v,idx)=>{
         if(v.status==='Uit planning') return;
+        if(!replace&&v.supabase) return;
         const supaCustomerId=maps.byKey.get(String(v.customerId));
-        if(!supaCustomerId) return;
+        if(!supaCustomerId){invalid.push((getC(v.customerId)||{}).Winkel||String(v.customerId));return;}
         const c=getC(v.customerId)||{};
         const t=tl.get(v.id)||{};
         rows.push({
@@ -4771,15 +4771,23 @@ async function drawVisitPdfLayout(doc,visit){
           uitgevoerd:v.status==='Bezocht'||v.status==='Uitgevoerd',
           route_volgorde:idx+1,
           reistijd_min:t.travel_min??null,
+          afstand_km:t.distance_km??null,
+          route_mode:t.route_mode||'car',
+          route_live:t.route_live===true,
           bezoekduur_min:num(v.duration||c.Bezoektijd,60),
           notities:v.note||v.notes||''
         });
       });
     });
+    if(invalid.length)throw new Error('Planning niet opgeslagen: '+invalid.length+' afspraak/afspraken hebben geen geldige klantkoppeling.');
+    if(rows.some(r=>num(r.reistijd_min,0)>720||num(r.afstand_km,0)>600))throw new Error('Planning niet opgeslagen: onrealistische route gevonden.');
+    let oldIds=[];
+    if(replace){const old=await client.from('planning').select('id').gte('datum',from).lte('datum',to);if(old.error)throw old.error;oldIds=(old.data||[]).map(r=>r.id);}
     if(rows.length){
-      const {error}=await client.from('planning').insert(rows);
+      const {error}=await client.from('planning').insert(rows).select('id');
       if(error) throw error;
     }
+    if(replace&&oldIds.length){for(let i=0;i<oldIds.length;i+=200){const del=await client.from('planning').delete().in('id',oldIds.slice(i,i+200));if(del.error)throw new Error('Nieuwe planning is opgeslagen, maar oude regels konden niet volledig worden verwijderd: '+del.error.message);}}
     setSyncStatus(`Supabase: ${rows.length} planningregels opgeslagen`, 'ok');
     return true;
   }
@@ -4791,7 +4799,7 @@ async function drawVisitPdfLayout(doc,visit){
       if(from) q=q.gte('datum',from); if(to) q=q.lte('datum',to);
       const {data,error}=await q;
       if(error) throw error;
-      const loaded=(data||[]).map(r=>({
+      const loaded=(data||[]).filter(r=>maps.byId.has(String(r.customer_id))).map(r=>({
         id:r.id,
         customerId:maps.byId.get(String(r.customer_id))||String(r.customer_id),
         date:r.datum,
@@ -4818,26 +4826,6 @@ async function drawVisitPdfLayout(doc,visit){
     }catch(e){console.error(e);setSyncStatus('Planning laden fout: '+e.message,'err');return false;}
   };
   window.savePlanningToSupabase=savePlanningToSupabase;
-  const bind=function(){
-    if(typeof window.generatePlanning==='function' && !window.generatePlanning._supabaseV35){
-      const old=window.generatePlanning;
-      const wrapped=async function(){
-        const from=parseDisplayDate($('planFrom').value), to=parseDisplayDate($('planTo').value);
-        const replace=$('planReplace') ? $('planReplace').checked : true;
-        const res=await old.apply(this,arguments);
-        if(from&&to){
-          try{await savePlanningToSupabase(from,to,replace);}
-          catch(e){console.error(e);alert('Planning is lokaal gemaakt, maar opslaan naar Supabase mislukte: '+e.message);setSyncStatus('Planning opslaan fout: '+e.message,'err');}
-        }
-        return res;
-      };
-      wrapped._supabaseV35=true;
-      window.generatePlanning=wrapped;
-      const btn=document.getElementById('btnRunPlanning');
-      if(btn) btn.onclick=wrapped;
-    }
-  };
-  window.addEventListener('load',()=>{setTimeout(bind,200); setTimeout(bind,1000);});
 })();
 </script>
 
@@ -5495,7 +5483,7 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 
-<script src="auth.js?v=10601"></script>
+<script src="auth.js?v=10700"></script>
 <script>
 (function(){
   function $(id){return document.getElementById(id)}
@@ -5639,6 +5627,6 @@ async function drawVisitPdfLayout(doc,visit){
 })();
 </script>
 <script src="v105.js?v=10500"></script>
-<script src="v106.js?v=10601"></script>
+<script src="v106.js?v=10700"></script>
 </body>
 </html>
