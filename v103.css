@@ -1,0 +1,47 @@
+:root{--v103-blue:#123b73;--v103-blue-hover:#31598b;--v103-silver:#d9e0e8}
+
+/* Volledige iPhone- en beheerknoppen: blauw met zilver. */
+body button,body button.secondary,body button.danger,body button.warningButton,body button.red,
+body .cropActions .cancel,body .menuLogout{
+  background:var(--v103-blue)!important;color:var(--v103-silver)!important;border-color:#31598b!important;
+}
+body button:hover,body button.active{background:var(--v103-blue-hover)!important;color:var(--v103-silver)!important}
+body button svg,body button .uiIcon,body button .navIcon,body button .menuIcon,body button .syncIcon{
+  color:var(--v103-silver)!important;stroke:var(--v103-silver)!important;
+}
+body button:disabled{opacity:.55!important}
+
+/* Logo zonder extra vlak of aanvullende producttekst. */
+.menuBrand,.productCard{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.menuBrand::before,.menuBrand::after,.productCard::before,.productCard::after{content:none!important;display:none!important}
+.productCard{min-height:118px;background:url('logo-menu.png?v=10300') center/contain no-repeat!important}
+.productVersion{font-size:10px!important;color:rgba(255,255,255,.62)!important}
+
+/* Ronde foto en ronde interactieve uitsnede op beide apparaten. */
+.profileButton,.desktopProfileButton,.v102ProfilePreview{border-radius:50%!important;overflow:hidden!important}
+.profileButton img,.desktopProfileButton img,.v102ProfilePreview{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;border-radius:50%!important}
+.cropViewport{width:min(270px,72vw)!important;height:min(270px,72vw)!important;aspect-ratio:1/1!important;border-radius:50%!important;overflow:hidden!important;border:4px solid var(--v103-silver)!important}
+.cropViewport img{display:block!important;max-width:none!important;max-height:none!important}
+
+/* Laptop: kalenderbediening werkelijk op één compacte regel. */
+#calendar .toolbar{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;overflow:visible!important}
+#calendar .toolbar>.group{flex-wrap:nowrap!important;gap:6px!important}
+#calendar .toolbar>.compactActions{margin-left:auto!important;flex-wrap:nowrap!important}
+#calendar .toolbar button{padding:7px 9px!important;white-space:nowrap!important;font-size:12px!important}
+#periodLabel{min-width:112px;text-align:center;font-size:12px}
+
+/* Compact profielgedeelte zonder verlies van functies. */
+#settings .v102SettingsGrid{grid-template-columns:minmax(250px,340px) minmax(320px,1fr)!important;gap:10px!important;margin-top:8px!important}
+#settings .v102Card{padding:10px!important;gap:7px!important}
+#settings .v102Card:first-child{grid-template-columns:74px 1fr!important;align-items:center!important}
+#settings .v102Card:first-child h3,#settings .v102Card:first-child p{grid-column:2!important;margin:0!important}
+#settings .v102Card:first-child button,#settings .v102Card:first-child input{grid-column:2!important}
+#settings .v102ProfilePreview{grid-column:1!important;grid-row:1/5!important;width:68px!important;height:68px!important}
+
+/* Laptopmenu schaalt mee en benut de hoogte. */
+.sidebar{overflow:hidden!important}.navList{justify-content:space-evenly!important;gap:clamp(2px,.45vh,6px)!important}
+.nav{font-size:clamp(12px,1.65vh,16px)!important;padding:clamp(7px,1.15vh,12px) 12px!important;line-height:1.1!important}
+
+.adminUserActions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+@media(max-width:1180px){#calendar .toolbar{overflow-x:auto!important;padding-bottom:4px!important}#calendar .toolbar>.compactActions{margin-left:0!important}}
+@media(max-width:760px){#settings .v102SettingsGrid{grid-template-columns:1fr!important}.productCard{min-height:104px}.menuPanel{overflow-y:auto}}
